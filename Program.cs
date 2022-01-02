@@ -1,6 +1,4 @@
-﻿using Discord.Net;
-
-public class Program
+﻿public class Program
 {
     public static Task Main(string[] args) => new Program().MainAsync();
 
@@ -11,7 +9,9 @@ public class Program
         _client = new Discord.WebSocket.DiscordSocketClient();
         _client.Log += Log;
 
-        var token = "PLACEHOLDER"; // MOVE THIS ASAP
+        var context = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText("context.json"));
+
+        var token = context["token"];
 
         await _client.LoginAsync(Discord.TokenType.Bot, token);
         await _client.StartAsync();
