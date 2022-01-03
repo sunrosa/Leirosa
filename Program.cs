@@ -28,7 +28,7 @@
         client.Log += Log;
 
         _log.Debug("Parsing workspace config...");
-        config = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText("context.json"));
+        config = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText("config.json"));
 
         var token = config["token"];
 

@@ -1,15 +1,17 @@
 public class NsfwModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCommandContext>
 {
     private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
-    private static string default_tags = "-scat+-loli+-shota+-bestiality+-peeing+-pee";
 
     [Discord.Commands.Command("gelbooru")]
-    [Discord.Commands.Summary("Gets a random file from Gelbooru (supports tags).")]
+    [Discord.Commands.Summary("Gets a random file from Gelbooru (tags optional).")]
     [Discord.Commands.RequireNsfw(Group = "Private")] // In an NSFW channel OR DM
     [Discord.Commands.RequireContext(Discord.Commands.ContextType.DM, Group = "Private")]
     public async Task GelbooruAsync([Discord.Commands.Remainder]string tags_str = "")
     {
         _log.Debug("\"gelbooru\" was called!");
+
+        _log.Debug("Obtaining default tags...");
+        var default_tags = Program.config["default_gelbooru_tags"];
 
         _log.Debug("Formatting requested tags...");
         tags_str = tags_str.Replace(" ", "+"); // Format tags for API request
@@ -25,16 +27,19 @@ public class NsfwModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCom
     }
 
     [Discord.Commands.Command("mgelbooru")]
-    [Discord.Commands.Summary("Gets 5 random files from Gelbooru (supports tags).")]
+    [Discord.Commands.Summary("Gets 5 random files from Gelbooru (tags optional).")]
     [Discord.Commands.RequireNsfw(Group = "Private")] // In an NSFW channel OR DM
     [Discord.Commands.RequireContext(Discord.Commands.ContextType.DM, Group = "Private")]
     public async Task MGelbooruAsync([Discord.Commands.Remainder]string tags_str = "")
     {
         _log.Debug("\"mgelbooru\" was called!");
 
+        _log.Debug("Obtaining default tags...");
+        var default_tags = Program.config["default_gelbooru_tags"];
+
         _log.Debug("Formatting requested tags...");
         tags_str = tags_str.Replace(" ", "+"); // Format tags for API request
-        var count = 5;
+        var count = 5; // Discord only embeds 5 images per message. If we wanted to surpass this limit, we would have to have it auto-post into separate consecutive messages.
 
         _log.Debug("Creating client for request...");
         var client = new HttpClient(); // Create client for request
