@@ -44,9 +44,25 @@ public class CommandHandler // The command handler as copied from the docs
 
         // Execute the command with the command context we just
         // created, along with the service provider for precondition checks.
-        await _commands.ExecuteAsync(
+        var result = await _commands.ExecuteAsync(
             context: context,
             argPos: argPos,
             services: null);
+
+        if (!result.IsSuccess)
+        {
+            switch(result.Error)
+            {
+                case Discord.Commands.CommandError.UnknownCommand:
+                    await context.Channel.SendMessageAsync("That command does not exist.");
+                    break;
+                case Discord.Commands.CommandError.BadArgCount:
+                    await context.Channel.SendMessageAsync("Bad parameters. See help for instructions on how to use the command.");
+                    break;
+                default:
+                    await context.Channel.SendMessageAsync(result.ToString());
+                    break;
+            }
+        }
     }
 }
