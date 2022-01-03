@@ -3,6 +3,7 @@
     public static Task Main(string[] args) => new Program().MainAsync();
 
     private Discord.WebSocket.DiscordSocketClient _client;
+    private Discord.Commands.CommandService _commands;
 
     public async Task MainAsync()
     {
@@ -23,13 +24,9 @@
 
     private async Task Ready()
     {
-        _client.MessageReceived += this.MessageReceived;
-    }
-
-    private async Task MessageReceived(Discord.WebSocket.SocketMessage msg)
-    {
-        if (msg.Author.IsBot || !msg.Content.StartsWith(".")) return;
-        await msg.Channel.SendMessageAsync(msg.Content);
+        _commands = new Discord.Commands.CommandService();
+        var command_handler = new CommandHandler(_client, _commands);
+        await command_handler.InstallCommandsAsync();
     }
 
     private Task Log(Discord.LogMessage msg)
