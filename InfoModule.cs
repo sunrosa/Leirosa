@@ -4,6 +4,14 @@ public class InfoModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCom
     [Discord.Commands.Summary("Provides command info.")]
     public async Task HelpAsync()
     {
+        // One in a hundred chance the command replies with "help!" and then does nothing else
+        var random = new Random();
+        if (random.Next(0, 101) == 0)
+        {
+            await ReplyAsync("help!");
+            return;
+        }
+
         var commands = Program.commands.Commands.ToList();
         var output = "```\n";
         foreach (var command in commands)
