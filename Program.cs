@@ -4,15 +4,16 @@
 
     private Discord.WebSocket.DiscordSocketClient _client;
     private Discord.Commands.CommandService _commands;
+    public static Dictionary<string, string> config;
 
     public async Task MainAsync()
     {
         _client = new Discord.WebSocket.DiscordSocketClient();
         _client.Log += Log;
 
-        var context = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText("context.json"));
+        config = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText("context.json"));
 
-        var token = context["token"];
+        var token = config["token"];
 
         await _client.LoginAsync(Discord.TokenType.Bot, token);
         await _client.StartAsync();

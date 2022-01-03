@@ -3,7 +3,13 @@ public class InfoModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCom
     [Discord.Commands.Command("help")]
     public async Task HelpAsync()
     {
-        await Context.Channel.SendMessageAsync("help!");
+        await ReplyAsync("help!");
+    }
+
+    [Discord.Commands.Command("invite")]
+    public async Task InviteAsync()
+    {
+        await ReplyAsync("https://discord.com/api/oauth2/authorize?client_id=927336569709424661&permissions=8&scope=bot");
     }
 
     [Discord.Commands.Command("whois")]
@@ -19,5 +25,27 @@ public class InfoModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCom
         .AddField("Joined", user.JoinedAt);
 
         await ReplyAsync(embed: embed.Build());
+    }
+
+    [Discord.Commands.Command("suggest")]
+    public async Task SuggestAsync([Discord.Commands.Remainder]string suggestion)
+    {
+        using (var writer = File.AppendText(Program.config["suggestions_path"]))
+        {
+            writer.WriteLine(suggestion);
+        }
+
+        await ReplyAsync("Thank you for your suggestion!");
+    }
+
+    [Discord.Commands.Command("report")]
+    public async Task ReportAsync([Discord.Commands.Remainder]string report)
+    {
+        using (var writer = File.AppendText(Program.config["reports_path"]))
+        {
+            writer.WriteLine(report);
+        }
+
+        await ReplyAsync("Thank you for your error report!");
     }
 }
