@@ -1,7 +1,7 @@
 public class NsfwModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCommandContext>
 {
     private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
-    private static string default_tags = "-scat+-loli+-shota";
+    private static string default_tags = "-scat+-loli+-shota+-bestiality+-peeing+-pee";
 
     [Discord.Commands.Command("gelbooru")]
     [Discord.Commands.Summary("Gets a random file from Gelbooru (supports tags).")]
