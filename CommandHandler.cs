@@ -43,7 +43,7 @@ public class CommandHandler // The command handler as copied from the docs
         int argPos = 1;
 
         // Determine if the message is a command based on the prefix and make sure no bots trigger commands
-        if (!message.Content.StartsWith(".") || message.Author.IsBot)
+        if (!message.Content.StartsWith(Program.config["prefix"]) || message.Author.IsBot)
         {
             _log.Debug("Message was not bot command. Exiting command sequence...");
             return;
