@@ -1,18 +1,29 @@
 public class InfoModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCommandContext>
 {
     [Discord.Commands.Command("help")]
+    [Discord.Commands.Summary("Provides command info.")]
     public async Task HelpAsync()
     {
-        await ReplyAsync("help!");
+        var commands = Program.commands.Commands.ToList();
+        var output = "```\n";
+        foreach (var command in commands)
+        {
+            output += $"{command.Name}: {command.Summary}\n";
+        }
+        output += "\n```";
+
+        await ReplyAsync(output);
     }
 
     [Discord.Commands.Command("invite")]
+    [Discord.Commands.Summary("Prints invite URL to invite this bot into other servers.")]
     public async Task InviteAsync()
     {
         await ReplyAsync("https://discord.com/api/oauth2/authorize?client_id=927336569709424661&permissions=8&scope=bot");
     }
 
     [Discord.Commands.Command("whois")]
+    [Discord.Commands.Summary("Prints data about you or somebody else.")]
     public async Task WhoisAsync(Discord.WebSocket.SocketGuildUser user = null) // May fail when pinging other users
     {
         if (user == null) user = Context.User as Discord.WebSocket.SocketGuildUser;
@@ -28,6 +39,7 @@ public class InfoModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCom
     }
 
     [Discord.Commands.Command("suggest")]
+    [Discord.Commands.Summary("Where you can suggest features.")]
     public async Task SuggestAsync([Discord.Commands.Remainder]string suggestion)
     {
         using (var writer = File.AppendText(Program.config["suggestions_path"]))
@@ -39,6 +51,7 @@ public class InfoModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCom
     }
 
     [Discord.Commands.Command("report")]
+    [Discord.Commands.Summary("Where you can report bugs.")]
     public async Task ReportAsync([Discord.Commands.Remainder]string report)
     {
         using (var writer = File.AppendText(Program.config["reports_path"]))

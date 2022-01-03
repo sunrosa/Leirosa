@@ -1,6 +1,7 @@
 public class GameModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCommandContext>
 {
     [Discord.Commands.Command("roll")]
+    [Discord.Commands.Summary("Rolls dice.")]
     public async Task DiceAsync(int sides = 6)
     {
         var random = new Random();
@@ -8,6 +9,7 @@ public class GameModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCom
     }
 
     [Discord.Commands.Command("draw")]
+    [Discord.Commands.Summary("Draws cards.")]
     public async Task CardAsync(int size = 1)
     {
         var random = new Random();

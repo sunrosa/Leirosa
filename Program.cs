@@ -2,31 +2,31 @@
 {
     public static Task Main(string[] args) => new Program().MainAsync();
 
-    private Discord.WebSocket.DiscordSocketClient _client;
-    private Discord.Commands.CommandService _commands;
+    public static Discord.WebSocket.DiscordSocketClient client;
+    public static Discord.Commands.CommandService commands;
     public static Dictionary<string, string> config;
 
     public async Task MainAsync()
     {
-        _client = new Discord.WebSocket.DiscordSocketClient();
-        _client.Log += Log;
+        client = new Discord.WebSocket.DiscordSocketClient();
+        client.Log += Log;
 
         config = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText("context.json"));
 
         var token = config["token"];
 
-        await _client.LoginAsync(Discord.TokenType.Bot, token);
-        await _client.StartAsync();
+        await client.LoginAsync(Discord.TokenType.Bot, token);
+        await client.StartAsync();
 
-        _client.Ready += Ready; // Call Ready() when the client is ready.
+        client.Ready += Ready; // Call Ready() when the client is ready.
 
         await Task.Delay(-1); // Block the thread to prevent the program from closing (infinite wait)
     }
 
     private async Task Ready()
     {
-        _commands = new Discord.Commands.CommandService();
-        var command_handler = new CommandHandler(_client, _commands);
+        commands = new Discord.Commands.CommandService();
+        var command_handler = new CommandHandler(client, commands);
         await command_handler.InstallCommandsAsync();
     }
 

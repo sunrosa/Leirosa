@@ -3,6 +3,7 @@ public class NsfwModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCom
     private static string default_tags = "-scat+-loli+-shota";
 
     [Discord.Commands.Command("gelbooru")]
+    [Discord.Commands.Summary("Gets a random file from Gelbooru (supports tags).")]
     [Discord.Commands.RequireNsfw]
     public async Task GelbooruAsync([Discord.Commands.Remainder]string tags_str = "")
     {
@@ -15,6 +16,7 @@ public class NsfwModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCom
     }
 
     [Discord.Commands.Command("mgelbooru")]
+    [Discord.Commands.Summary("Gets 5 random files from Gelbooru (supports tags).")]
     [Discord.Commands.RequireNsfw]
     public async Task MGelbooruAsync([Discord.Commands.Remainder]string tags_str = "")
     {
