@@ -1,11 +1,13 @@
 public class CommandHandler // The command handler as copied from the docs
 {
+    private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
     private readonly Discord.WebSocket.DiscordSocketClient _client;
     private readonly Discord.Commands.CommandService _commands;
 
     // Retrieve client and CommandService instance via ctor
     public CommandHandler(Discord.WebSocket.DiscordSocketClient client, Discord.Commands.CommandService commands)
     {
+        _log.Debug("Constructing CommandHandler...");
         _commands = commands;
         _client = client;
     }
@@ -13,6 +15,7 @@ public class CommandHandler // The command handler as copied from the docs
     public async Task InstallCommandsAsync()
     {
         // Hook the MessageReceived event into our command handler
+        _log.Debug("Hooking Client.MessageReceived into HandleCommandAsync...");
         _client.MessageReceived += HandleCommandAsync;
 
         // Here we discover all of the command modules in the entry
@@ -23,12 +26,15 @@ public class CommandHandler // The command handler as copied from the docs
         //
         // If you do not use Dependency Injection, pass null.
         // See Dependency Injection guide for more information.
+        _log.Debug("Reflecting for commands...");
         await _commands.AddModulesAsync(assembly: System.Reflection.Assembly.GetEntryAssembly(),
                                         services: null);
     }
 
     private async Task HandleCommandAsync(Discord.WebSocket.SocketMessage messageParam)
     {
+        _log.Debug("Message received!");
+
         // Don't process the command if it was a system message
         var message = messageParam as Discord.WebSocket.SocketUserMessage;
         if (message == null) return;
@@ -37,13 +43,20 @@ public class CommandHandler // The command handler as copied from the docs
         int argPos = 1;
 
         // Determine if the message is a command based on the prefix and make sure no bots trigger commands
-        if (!message.Content.StartsWith(".") || message.Author.IsBot) return;
+        if (!message.Content.StartsWith(".") || message.Author.IsBot)
+        {
+            _log.Debug("Message was not bot command. Exiting command sequence...");
+            return;
+        }
+        _log.Debug("Message was bot command. Continuing command sequence...");
 
         // Create a WebSocket-based command context based on the message
         var context = new Discord.Commands.SocketCommandContext(_client, message);
+        _log.Debug($"Context created. Command was \"{context.Message.Content}\" sent by {context.User.Username} in guild {context.Guild.Id} in channel {context.Channel.Id}.");
 
         // Execute the command with the command context we just
         // created, along with the service provider for precondition checks.
+        _log.Debug("Executing command...");
         var result = await _commands.ExecuteAsync(
             context: context,
             argPos: argPos,
@@ -51,6 +64,7 @@ public class CommandHandler // The command handler as copied from the docs
 
         if (!result.IsSuccess)
         {
+            _log.Debug($"Command had error \"{result.Error}: {result.ErrorReason}\"");
             switch(result.Error)
             {
                 case Discord.Commands.CommandError.UnknownCommand:
@@ -60,6 +74,7 @@ public class CommandHandler // The command handler as copied from the docs
                     await context.Channel.SendMessageAsync("Bad parameters. See help for instructions on how to use the command.");
                     break;
                 default:
+                    _log.Debug("No help text was available for the error at hand. Sending error itself as a message...");
                     await context.Channel.SendMessageAsync(result.ToString());
                     break;
             }
