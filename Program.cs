@@ -12,7 +12,7 @@
     {
         {
             var config = new NLog.Config.LoggingConfiguration();
-            var logfile = new NLog.Targets.FileTarget("logfile"){FileName="log.txt"};
+            var logfile = new NLog.Targets.FileTarget("logfile"){FileName="log.log"};
             var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
 
             config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logconsole);

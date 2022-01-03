@@ -23,7 +23,7 @@ public class InfoModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCom
         var output = "```\n";
         foreach (var command in commands)
         {
-            output += $"{command.Name}: {command.Summary}\n";
+            output += $"{command.Name} [{command.Module.Name.Remove(command.Module.Name.Length - 6)}]: {command.Summary}\n";
         }
         output += "\n```";
 
@@ -31,12 +31,19 @@ public class InfoModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCom
         await ReplyAsync(output);
     }
 
+    [Discord.Commands.Command("source")]
+    [Discord.Commands.Summary("Prints my source code.")]
+    public async Task SourceAsync()
+    {
+        _log.Debug("\"source\" was called!");
+        await ReplyAsync("https://github.com/sunrosa/Mailwash");
+    }
+
     [Discord.Commands.Command("invite")]
-    [Discord.Commands.Summary("Prints invite URL to invite this bot into other servers.")]
+    [Discord.Commands.Summary("Prints invite URL to invite me into other servers.")]
     public async Task InviteAsync()
     {
         _log.Debug("\"invite\" was called!");
-
         await ReplyAsync("https://discord.com/api/oauth2/authorize?client_id=927336569709424661&permissions=8&scope=bot");
     }
 
