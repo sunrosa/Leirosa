@@ -16,7 +16,20 @@
         await _client.LoginAsync(Discord.TokenType.Bot, token);
         await _client.StartAsync();
 
-        await Task.Delay(-1);
+        _client.Ready += Ready; // Call Ready() when the client is ready.
+
+        await Task.Delay(-1); // Block the thread to prevent the program from closing (infinite wait)
+    }
+
+    private async Task Ready()
+    {
+        _client.MessageReceived += this.MessageReceived;
+    }
+
+    private async Task MessageReceived(Discord.WebSocket.SocketMessage msg)
+    {
+        if (msg.Author.IsBot || !msg.Content.StartsWith(".")) return;
+        await msg.Channel.SendMessageAsync(msg.Content);
     }
 
     private Task Log(Discord.LogMessage msg)
