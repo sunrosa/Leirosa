@@ -32,7 +32,7 @@ public class InfoModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCom
     {
         using (var writer = File.AppendText(Program.config["suggestions_path"]))
         {
-            writer.WriteLine(suggestion);
+            writer.WriteLine($"{DateTime.Now} - {suggestion}");
         }
 
         await ReplyAsync("Thank you for your suggestion!");
@@ -43,7 +43,7 @@ public class InfoModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCom
     {
         using (var writer = File.AppendText(Program.config["reports_path"]))
         {
-            writer.WriteLine(report);
+            writer.WriteLine($"{DateTime.Now} - {report}");
         }
 
         await ReplyAsync("Thank you for your error report!");
