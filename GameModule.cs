@@ -1,5 +1,16 @@
 public class GameModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCommandContext>
 {
+    [Discord.Commands.Command("flip")]
+    [Discord.Commands.Summary("Flips a coin.")]
+    public async Task FlipAsync()
+    {
+        var random = new Random();
+        var result = "";
+        if (random.Next(2) == 1) result = "Heads";
+        else result = "Tails";
+        await ReplyAsync($"{result}!");
+    }
+
     [Discord.Commands.Command("roll")]
     [Discord.Commands.Summary("Rolls dice.")]
     public async Task DiceAsync(int sides = 6)
