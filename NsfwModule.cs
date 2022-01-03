@@ -23,7 +23,7 @@ public class NsfwModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCom
         _log.Debug("Parsing request...");
         dynamic response_json = Newtonsoft.Json.JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync()); // Parse request
         _log.Debug("Replying with file...");
-        await ReplyAsync(response_json.post.file_url.ToString(), messageReference: new Discord.MessageReference(Context.Message.Id)); // Don't touch this sacred bullshit
+        await ReplyAsync(response_json.post[0].file_url.ToString(), messageReference: new Discord.MessageReference(Context.Message.Id)); // Don't touch this sacred bullshit
     }
 
     [Discord.Commands.Command("mgelbooru")]
