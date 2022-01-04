@@ -62,31 +62,61 @@ namespace Mailwash
                 user = Context.User as Discord.WebSocket.SocketGuildUser;
             }
 
-            var color = System.Drawing.Color.White;
+            var color = new Discord.Color(0, 0, 0);
 
-            // Some bullshit to get the average color of the user icon
-            using (var client = new HttpClient())
+            if (bool.Parse(Program.config["embed_color_from_user_avatar"]))
             {
-                _log.Debug("Retrieving user icon...");
-                var response = await client.GetAsync(user.GetAvatarUrl());
-                _log.Debug("Converting HTTP response to image...");
-                var ms = new MemoryStream(await response.Content.ReadAsByteArrayAsync());
-                var img = System.Drawing.Image.FromStream(ms);
-                var bmp = new System.Drawing.Bitmap(1, 1);
+                _log.Debug("Config opted to calculate embed color via user avatar.");
 
-                _log.Debug("Interpolating (averaging) image color...");
-                using (var g = System.Drawing.Graphics.FromImage(bmp))
+                // Some bullshit to get the average color of the user icon
+                using (var client = new HttpClient())
                 {
-                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                    g.DrawImage(img, new System.Drawing.Rectangle(0, 0, 1, 1));
+                    _log.Debug("Retrieving user icon...");
+                    var response = await client.GetAsync(user.GetAvatarUrl());
+                    _log.Debug("Converting HTTP response to image...");
+                    var ms = new MemoryStream(await response.Content.ReadAsByteArrayAsync());
+                    var img = System.Drawing.Image.FromStream(ms);
+                    var bmp = new System.Drawing.Bitmap(1, 1);
+
+                    _log.Debug("Interpolating (averaging) image color...");
+                    using (var g = System.Drawing.Graphics.FromImage(bmp))
+                    {
+                        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                        g.DrawImage(img, new System.Drawing.Rectangle(0, 0, 1, 1));
+                    }
+
+                    var pixel = bmp.GetPixel(0, 0);
+                    color = new Discord.Color(pixel.R, pixel.G, pixel.B);
+                }
+            }
+            else
+            {
+                _log.Debug("Config opted to calculate embed color via user's top role.");
+
+                _log.Debug("Sorting roles...");
+                var roles_sorted = user.Roles.OrderBy(x => x.Position); // Roles sorted by position
+
+                _log.Debug("Stepping through roles from top to bottom in order to find a color for the embed...");
+                foreach (var role in roles_sorted.Reverse())
+                {
+                    if (!(role.Color.R == 0 && role.Color.G == 0 && role.Color.B == 0))
+                    {
+                        _log.Debug("Found a role color for the embed.");
+                        color = role.Color;
+                        break;
+                    }
                 }
 
-                color = bmp.GetPixel(0, 0);
+                if (color.R == 0 && color.G == 0 && color.B == 0)
+                {
+                    _log.Debug("No role color was found for the embed. Setting the color to 200, 200, 200...");
+                    color = new Discord.Color(200, 200, 200);
+                }
             }
 
             _log.Debug("Building embed...");
             var embed = new Discord.EmbedBuilder();
-            embed.WithColor(new Discord.Color(color.R, color.G, color.B))
+            embed.WithColor(color)
             .AddField("Name", user.Username, true)
             .AddField("Nickname", user.Nickname != null ? user.Nickname : "None", true)
             .AddField("Id", user.Id, true)
@@ -103,7 +133,7 @@ namespace Mailwash
         {
             _log.Debug("\"serverinfo\" was called!");
 
-            var color = System.Drawing.Color.White;
+            var color = new Discord.Color(0, 0, 0);
 
             // Some bullshit to get the average color of the server icon
             using (var client = new HttpClient())
@@ -122,12 +152,13 @@ namespace Mailwash
                     g.DrawImage(img, new System.Drawing.Rectangle(0, 0, 1, 1));
                 }
 
-                color = bmp.GetPixel(0, 0);
+                var pixel = bmp.GetPixel(0, 0);
+                color = new Discord.Color(pixel.R, pixel.G, pixel.B);
             }
 
             _log.Debug("Building embed...");
             var embed = new Discord.EmbedBuilder();
-            embed.WithColor(new Discord.Color(color.R, color.G, color.B))
+            embed.WithColor(color)
             .AddField("Name", Context.Guild.Name, true)
             .AddField("Id", Context.Guild.Id, true)
             .AddField("Members", Context.Guild.MemberCount, true)
