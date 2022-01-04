@@ -4,3 +4,5 @@ obj/
 *.csproj
 *.json
 *.txt
+
+TestModule.cs
