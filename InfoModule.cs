@@ -110,7 +110,7 @@ namespace Mailwash
 
         [Discord.Commands.Command("userinfo")]
         [Discord.Commands.Alias("whois")]
-        [Discord.Commands.Summary("Prints data about you or somebody else.")]
+        [Discord.Commands.Summary("[user (optional)] Prints data about you or somebody else.")]
         public async Task WhoisAsync(Discord.WebSocket.SocketGuildUser user = null) // May fail when pinging other users
         {
             _log.Debug("\"whois\" was called!");
@@ -220,7 +220,7 @@ namespace Mailwash
         }
 
         [Discord.Commands.Command("permissions")]
-        [Discord.Commands.Summary("Prints a user's permissions.")]
+        [Discord.Commands.Summary("[user (optional)] Prints a user's guild permissions.")]
         public async Task PermissionsAsync(Discord.WebSocket.SocketGuildUser user = null)
         {
             _log.Debug("\"permissions\" was called!");
@@ -244,8 +244,50 @@ namespace Mailwash
             await ReplyAsync(embed: embed.Build());
         }
 
+        [Discord.Commands.Command("cpermissions")]
+        [Discord.Commands.Summary("[user (optional), channel (optional)] Prints a user's channel permissions.")]
+        public async Task CPermissionsAsync(Discord.WebSocket.SocketGuildUser user = null, Discord.WebSocket.SocketGuildChannel channel = null)
+        {
+            _log.Debug("\"cpermissions\" was called!");
+
+            if (user == null)
+            {
+                _log.Debug("No user target. Setting target user to self...");
+                user = Context.User as Discord.WebSocket.SocketGuildUser;
+            }
+
+            if (channel == null)
+            {
+                _log.Debug("No channel target. Setting channel target to context.");
+                channel = Context.Channel as Discord.WebSocket.SocketGuildChannel;
+            }
+
+            var permissions_string = "";
+
+            _log.Debug("Creating permissions list...");
+            try
+            {
+                permissions_string = user.GetPermissions(channel).ToList().Select(x => x.ToString()).Aggregate((a, b) => a + "\n" + b);
+            }
+            catch (System.InvalidOperationException)
+            {
+                _log.Debug("No permissions found. Returning...");
+                await ReplyAsync("User is not a member of channel.");
+                return;
+            }
+
+            _log.Debug("Building embed...");
+            var embed = new Discord.EmbedBuilder();
+            embed.WithColor(await GetUserColor(user))
+            .WithAuthor(new Discord.EmbedAuthorBuilder().WithName(user.Username).WithIconUrl(user.GetAvatarUrl()))
+            .AddField("Permissions", permissions_string);
+
+            _log.Debug("Replying...");
+            await ReplyAsync(embed: embed.Build());
+        }
+
         [Discord.Commands.Command("suggest")]
-        [Discord.Commands.Summary("Where you can suggest features.")]
+        [Discord.Commands.Summary("[suggestion (remainder)] Where you can suggest features.")]
         public async Task SuggestAsync([Discord.Commands.Remainder]string suggestion)
         {
             _log.Debug("\"suggest\" was called!");
@@ -259,7 +301,7 @@ namespace Mailwash
         }
 
         [Discord.Commands.Command("report")]
-        [Discord.Commands.Summary("Where you can report bugs.")]
+        [Discord.Commands.Summary("[report (remainder)] Where you can report bugs.")]
         public async Task ReportAsync([Discord.Commands.Remainder]string report)
         {
             _log.Debug("\"report\" was called!");
@@ -285,7 +327,7 @@ namespace Mailwash
         }
 
         [Discord.Commands.Command("echo")]
-        [Discord.Commands.Summary("Echoes what you say.")]
+        [Discord.Commands.Summary("[text (remainder)] Echoes what you say.")]
         public async Task EchoAsync([Discord.Commands.Remainder]string text)
         {
             _log.Debug("\"echo\" was called!");

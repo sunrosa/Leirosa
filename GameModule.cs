@@ -19,7 +19,7 @@ namespace Mailwash
         }
 
         [Discord.Commands.Command("roll")]
-        [Discord.Commands.Summary("Rolls dice.")]
+        [Discord.Commands.Summary("[sides (optional)] Rolls dice.")]
         public async Task RollAsync(int sides = 6)
         {
             _log.Debug("\"roll\" was called!");
@@ -31,8 +31,8 @@ namespace Mailwash
         }
 
         [Discord.Commands.Command("draw")]
-        [Discord.Commands.Summary("Draws cards.")]
-        public async Task DrawAsync(int size = 1)
+        [Discord.Commands.Summary("[count (optional)] Draws cards.")]
+        public async Task DrawAsync(int count = 1)
         {
             _log.Debug("\"draw\" was called!");
 
@@ -43,7 +43,7 @@ namespace Mailwash
             _log.Debug("Shuffling cards...");
             card_names = card_names.OrderBy(x => random.Next()).ToArray(); // Shuffle
 
-            if (size == 1)
+            if (count == 1)
             {
                 _log.Debug("Caller requested only one card. Replying with first of shuffled card array...");
                 var card = card_names[0];
@@ -52,7 +52,7 @@ namespace Mailwash
             }
 
             _log.Debug("Caller requested more than one card. Creating array slice from 0 to selection size of card array...");
-            var selected_cards = new List<string>(card_names[0..size]);
+            var selected_cards = new List<string>(card_names[0..count]);
 
             // "Pop" last card
             _log.Debug("Popping last card for grammatical \"and\"...");

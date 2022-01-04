@@ -5,7 +5,7 @@ namespace Mailwash
         private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
 
         [Discord.Commands.Command("gelbooru")]
-        [Discord.Commands.Summary("Gets a random file from Gelbooru (tags optional).")]
+        [Discord.Commands.Summary("[tags (remainder) (optional)] Gets a random file from Gelbooru.")]
         [Discord.Commands.RequireNsfw(Group = "Private")] // In an NSFW channel OR DM
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.DM, Group = "Private")]
         public async Task GelbooruAsync([Discord.Commands.Remainder]string tags_str = "")
@@ -37,7 +37,7 @@ namespace Mailwash
         }
 
         [Discord.Commands.Command("mgelbooru")]
-        [Discord.Commands.Summary("Gets 5 random files from Gelbooru (tags optional).")]
+        [Discord.Commands.Summary("[tags (remainder) (optional)] Gets 5 random files from Gelbooru.")]
         [Discord.Commands.RequireNsfw(Group = "Private")] // In an NSFW channel OR DM
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.DM, Group = "Private")]
         public async Task MGelbooruAsync([Discord.Commands.Remainder]string tags_str = "")
