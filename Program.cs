@@ -29,7 +29,8 @@
             client = new Discord.WebSocket.DiscordSocketClient(new Discord.WebSocket.DiscordSocketConfig(){
                 LogLevel = Discord.LogSeverity.Debug,
                 AlwaysDownloadUsers = true,
-                GatewayIntents = Discord.GatewayIntents.All // VERY IMPORTANT. SHIT DOESN'T WORK WITHOUT THIS. The Discord API basically neglects to send us shit (most notably SocketGuildUsers), unless we have all intents SPECIFIED in our config.
+                GatewayIntents = Discord.GatewayIntents.All, // VERY IMPORTANT. SHIT DOESN'T WORK WITHOUT THIS. The Discord API basically neglects to send us shit (most notably SocketGuildUsers), unless we have all intents SPECIFIED in our config.
+                LogGatewayIntentWarnings = false
             });
             client.Log += Log;
 
