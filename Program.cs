@@ -26,7 +26,11 @@
             _log.Info("Setup logger. Beginning of MainAsync().");
 
             _log.Debug("Creating client...");
-            client = new Discord.WebSocket.DiscordSocketClient();
+            client = new Discord.WebSocket.DiscordSocketClient(new Discord.WebSocket.DiscordSocketConfig(){
+                LogLevel = Discord.LogSeverity.Debug,
+                AlwaysDownloadUsers = true,
+                GatewayIntents = Discord.GatewayIntents.All // VERY IMPORTANT. SHIT DOESN'T WORK WITHOUT THIS. The Discord API basically neglects to send us shit (most notably SocketGuildUsers), unless we have all intents SPECIFIED in our config.
+            });
             client.Log += Log;
 
             _log.Debug("Parsing workspace config...");

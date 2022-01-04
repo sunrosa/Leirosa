@@ -171,5 +171,17 @@ namespace Mailwash
 
             await ReplyAsync("Thank you for your error report!");
         }
+
+        [Discord.Commands.Command("maintenance")]
+        [Discord.Commands.Summary("Maintenance function that solves some problems.")]
+        public async Task MaintenanceAsync()
+        {
+            _log.Debug("\"maintenance\" was called!");
+
+            _log.Debug($"Downloading users in {Context.Guild.Id}.");
+            await Context.Guild.DownloadUsersAsync();
+
+            await ReplyAsync("Maintenance complete!");
+        }
     }
 }
