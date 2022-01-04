@@ -110,7 +110,7 @@ namespace Mailwash
 
         [Discord.Commands.Command("userinfo")]
         [Discord.Commands.Alias("whois")]
-        [Discord.Commands.Summary("Prints data about you or somebody else (somewhat broken).")]
+        [Discord.Commands.Summary("Prints data about you or somebody else.")]
         public async Task WhoisAsync(Discord.WebSocket.SocketGuildUser user = null) // May fail when pinging other users
         {
             _log.Debug("\"whois\" was called!");
@@ -220,7 +220,7 @@ namespace Mailwash
         }
 
         [Discord.Commands.Command("permissions")]
-        [Discord.Commands.Summary("Get a user's permissions")]
+        [Discord.Commands.Summary("Prints a user's permissions.")]
         public async Task PermissionsAsync(Discord.WebSocket.SocketGuildUser user = null)
         {
             _log.Debug("\"permissions\" was called!");
