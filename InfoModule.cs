@@ -105,7 +105,7 @@ namespace Mailwash
         public async Task InviteAsync()
         {
             _log.Debug("\"invite\" was called!");
-            await ReplyAsync("https://discord.com/api/oauth2/authorize?client_id=927336569709424661&permissions=8&scope=bot");
+            await ReplyAsync(Program.config["invite"]);
         }
 
         [Discord.Commands.Command("userinfo")]
