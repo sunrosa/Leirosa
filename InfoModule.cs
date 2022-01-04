@@ -50,7 +50,7 @@ namespace Mailwash
         }
 
         [Discord.Commands.Command("whois")]
-        [Discord.Commands.Summary("Prints data about you or somebody else.")]
+        [Discord.Commands.Summary("Prints data about you or somebody else (somewhat broken).")]
         public async Task WhoisAsync(Discord.WebSocket.SocketGuildUser user = null) // May fail when pinging other users
         {
             _log.Debug("\"whois\" was called!");
@@ -70,6 +70,46 @@ namespace Mailwash
             .AddField("Joined", user.JoinedAt);
 
             _log.Debug("Replying...");
+            await ReplyAsync(embed: embed.Build());
+        }
+
+        [Discord.Commands.Command("serverinfo")]
+        [Discord.Commands.Summary("Prints general server info.")]
+        public async Task ServerInfoAsync()
+        {
+            var color = System.Drawing.Color.White;
+
+            // Some bullshit to get the average color of the server icon
+            using (var client = new HttpClient())
+            {
+                var response = await client.GetAsync(Context.Guild.IconUrl);
+                var ms = new MemoryStream(await response.Content.ReadAsByteArrayAsync());
+                var img = System.Drawing.Image.FromStream(ms);
+                var bmp = new System.Drawing.Bitmap(1, 1);
+
+                using (var g = System.Drawing.Graphics.FromImage(bmp))
+                {
+                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    g.DrawImage(img, new System.Drawing.Rectangle(0, 0, 1, 1));
+                }
+
+                color = bmp.GetPixel(0, 0);
+            }
+
+            var embed = new Discord.EmbedBuilder();
+            embed.WithColor(new Discord.Color(color.R, color.G, color.B))
+            .AddField("Name", Context.Guild.Name)
+            .AddField("Id", Context.Guild.Id)
+            .AddField("Members", Context.Guild.MemberCount)
+            .AddField("Owner", await Context.Client.GetUserAsync(Context.Guild.OwnerId)) /* For some fucking reason, Context.Guild.Owner.Username is null, so we do this instead. */
+            .AddField("Created", Context.Guild.CreatedAt)
+            .AddField("Verification", Context.Guild.VerificationLevel)
+            .AddField("Roles", Context.Guild.Roles.Count)
+            .AddField("Text channels", Context.Guild.TextChannels.Count)
+            .AddField("Voice channels", Context.Guild.VoiceChannels.Count)
+            .AddField("Active threads", Context.Guild.ThreadChannels.Count)
+            .AddField("Boosts", Context.Guild.PremiumSubscriptionCount);
+
             await ReplyAsync(embed: embed.Build());
         }
 

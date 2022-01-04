@@ -54,7 +54,7 @@ namespace Mailwash
 
             // Create a WebSocket-based command context based on the message
             var context = new Discord.Commands.SocketCommandContext(_client, message);
-            _log.Debug($"Context created. Command was \"{context.Message.Content}\" sent by {context.User.Username} in guild {context.Guild.Id} in channel {context.Channel.Id}.");
+            _log.Debug($"Context created. Command was \"{context.Message.Content}\" sent by {context.User.Username} ({context.User.Id}) in channel {context.Channel.Id} in guild {context.Guild.Id}.");
 
             // Execute the command with the command context we just
             // created, along with the service provider for precondition checks.
@@ -74,6 +74,9 @@ namespace Mailwash
                         break;
                     case Discord.Commands.CommandError.BadArgCount:
                         await context.Channel.SendMessageAsync("Bad parameters. See help for instructions on how to use the command.");
+                        break;
+                    case Discord.Commands.CommandError.ObjectNotFound:
+                        await context.Channel.SendMessageAsync("User, role, or channel not found.");
                         break;
                     default:
                         _log.Debug("No help text was available for the error at hand. Sending error itself as a message...");
