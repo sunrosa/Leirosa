@@ -283,5 +283,18 @@ namespace Mailwash
 
             await ReplyAsync("Maintenance complete!");
         }
+
+        [Discord.Commands.Command("echo")]
+        [Discord.Commands.Summary("Echoes what you say.")]
+        public async Task EchoAsync([Discord.Commands.Remainder]string text)
+        {
+            _log.Debug("\"echo\" was called!");
+
+            _log.Debug("Deleting caller...");
+            await Context.Message.DeleteAsync();
+
+            _log.Debug("Replying...");
+            await ReplyAsync(text);
+        }
     }
 }
