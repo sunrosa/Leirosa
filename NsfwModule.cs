@@ -81,7 +81,7 @@ namespace Leirosa
         [Discord.Commands.Summary("[count (<25), tags (remainder) (optional)]")]
         [Discord.Commands.RequireNsfw(Group = "Private")] // In an NSFW channel OR DM
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.DM, Group = "Private")]
-        public async Task ManyGelbooruAsync(uint count, [Discord.Commands.Remainder]string tags_str = "")
+        public async Task XGelbooruAsync(uint count, [Discord.Commands.Remainder]string tags_str = "")
         {
             try
             {
@@ -107,6 +107,7 @@ namespace Leirosa
                 _log.Debug("Parsing request...");
                 dynamic response_json = Newtonsoft.Json.JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync()); // Parse request
 
+                // Some crazy bullshit that separates the http response's post links into chunks of 5 and replies with those chunks
                 _log.Debug("Formatting output...");
                 var i = 0;
                 var output = "";
@@ -122,7 +123,6 @@ namespace Leirosa
                         output = "";
                     }
                 }
-
                 if (output != "")
                 {
                     _log.Debug("URLs are left in the remainder of the foreach. Replying...");

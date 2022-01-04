@@ -159,7 +159,7 @@ namespace Leirosa
             embed.WithColor(await GetUserColor(user))
             .WithAuthor(new Discord.EmbedAuthorBuilder().WithName(user.Username).WithIconUrl(user.GetAvatarUrl()))
             .AddField("Name", $"{user.Username}#{user.Discriminator}", true)
-            .AddField("Nickname", user.Nickname != null ? user.Nickname : "None", true)
+            .AddField("Nickname", user.Nickname ?? "None", true)
             .AddField("Id", user.Id, true)
             .AddField("Account created", user.CreatedAt, true)
             .AddField("Joined", user.JoinedAt, true)
