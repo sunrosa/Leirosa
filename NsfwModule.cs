@@ -76,5 +76,65 @@ namespace Leirosa
                 await ReplyAsync("Not found.");
             }
         }
+
+        [Discord.Commands.Command("xgelbooru")]
+        [Discord.Commands.Summary("[count (<25), tags (remainder) (optional)]")]
+        [Discord.Commands.RequireNsfw(Group = "Private")] // In an NSFW channel OR DM
+        [Discord.Commands.RequireContext(Discord.Commands.ContextType.DM, Group = "Private")]
+        public async Task ManyGelbooruAsync(uint count, [Discord.Commands.Remainder]string tags_str = "")
+        {
+            try
+            {
+                _log.Debug("\"manygelbooru\" was called!");
+
+                if (count > 25)
+                {
+                    _log.Debug("User requested over 25 files at once. Returning...");
+                    await ReplyAsync("Please request less than or equal to 25 files.");
+                    return;
+                }
+
+                _log.Debug("Obtaining default tags...");
+                var default_tags = Program.config["default_gelbooru_tags"];
+
+                _log.Debug("Formatting requested tags...");
+                tags_str = tags_str.Replace(" ", "+"); // Format tags for API request
+
+                _log.Debug("Creating client for request...");
+                var client = new HttpClient(); // Create client for request
+                _log.Debug("Making request...");
+                var response = await client.GetAsync($"https://gelbooru.com/index.php?page=dapi&s=post&q=index&limit={count}&json=1&tags=sort:random+{default_tags}+{tags_str}"); // Make request
+                _log.Debug("Parsing request...");
+                dynamic response_json = Newtonsoft.Json.JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync()); // Parse request
+
+                _log.Debug("Formatting output...");
+                var i = 0;
+                var output = "";
+                foreach (var post in response_json.post)
+                {
+                    i += 1;
+                    output += post.file_url.ToString() + "\n";
+
+                    if (i % 5 == 0)
+                    {
+                        _log.Debug("Replying...");
+                        await ReplyAsync(output, messageReference: new Discord.MessageReference(Context.Message.Id));
+                        output = "";
+                    }
+                }
+
+                if (output != "")
+                {
+                    _log.Debug("URLs are left in the remainder of the foreach. Replying...");
+                    await ReplyAsync(output, messageReference: new Discord.MessageReference(Context.Message.Id));
+                }
+
+            }
+            catch
+            {
+                _log.Debug("An exception was thrown. Replying with \"Not found.\"");
+                await ReplyAsync("Not found.");
+            }
+        }
     }
 }

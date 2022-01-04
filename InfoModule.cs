@@ -320,8 +320,11 @@ namespace Leirosa
         {
             _log.Debug("\"maintenance\" was called!");
 
-            _log.Debug($"Downloading users in {Context.Guild.Id}.");
+            _log.Debug($"Downloading users in guild {Context.Guild.Name} ({Context.Guild.Id}).");
             await Context.Guild.DownloadUsersAsync();
+
+            _log.Debug("Collecting garbage...");
+            System.GC.Collect();
 
             await ReplyAsync("Maintenance complete!");
         }
