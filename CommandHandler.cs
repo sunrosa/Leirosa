@@ -1,4 +1,4 @@
-namespace Mailwash
+namespace Leirosa
 {
     public class CommandHandler // The command handler as copied from the docs
     {

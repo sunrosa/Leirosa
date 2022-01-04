@@ -1,4 +1,4 @@
-namespace Mailwash
+namespace Leirosa
 {
     public class NsfwModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCommandContext>
     {

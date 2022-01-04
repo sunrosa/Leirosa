@@ -1,4 +1,4 @@
-﻿namespace Mailwash
+﻿namespace Leirosa
 {
     public class Program
     {

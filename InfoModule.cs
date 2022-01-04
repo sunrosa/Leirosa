@@ -1,4 +1,4 @@
-namespace Mailwash
+namespace Leirosa
 {
     public class InfoModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCommandContext>
     {
@@ -97,7 +97,7 @@ namespace Mailwash
         public async Task SourceAsync()
         {
             _log.Debug("\"source\" was called!");
-            await ReplyAsync("https://github.com/sunrosa/Mailwash");
+            await ReplyAsync(Program.config["source"]);
         }
 
         [Discord.Commands.Command("invite")]

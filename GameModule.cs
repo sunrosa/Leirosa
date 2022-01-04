@@ -1,4 +1,4 @@
-namespace Mailwash
+namespace Leirosa
 {
     public class GameModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCommandContext>
     {
