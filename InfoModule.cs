@@ -280,7 +280,7 @@ namespace Mailwash
             var embed = new Discord.EmbedBuilder();
             embed.WithColor(await GetUserColor(user))
             .WithAuthor(new Discord.EmbedAuthorBuilder().WithName(user.Username).WithIconUrl(user.GetAvatarUrl()))
-            .AddField("Permissions", permissions_string);
+            .AddField($"Permissions in {channel.Name}", permissions_string);
 
             _log.Debug("Replying...");
             await ReplyAsync(embed: embed.Build());
