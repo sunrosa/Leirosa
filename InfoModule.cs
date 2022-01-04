@@ -49,7 +49,8 @@ namespace Mailwash
             await ReplyAsync("https://discord.com/api/oauth2/authorize?client_id=927336569709424661&permissions=8&scope=bot");
         }
 
-        [Discord.Commands.Command("whois")]
+        [Discord.Commands.Command("userinfo")]
+        [Discord.Commands.Alias("whois")]
         [Discord.Commands.Summary("Prints data about you or somebody else (somewhat broken).")]
         public async Task WhoisAsync(Discord.WebSocket.SocketGuildUser user = null) // May fail when pinging other users
         {
@@ -86,11 +87,11 @@ namespace Mailwash
             _log.Debug("Building embed...");
             var embed = new Discord.EmbedBuilder();
             embed.WithColor(new Discord.Color(color.R, color.G, color.B))
-            .AddField("Name", user.Username)
-            .AddField("Nickname", user.Nickname != null ? user.Nickname : "None")
-            .AddField("Id", user.Id)
-            .AddField("Account created", user.CreatedAt)
-            .AddField("Joined", user.JoinedAt);
+            .AddField("Name", user.Username, true)
+            .AddField("Nickname", user.Nickname != null ? user.Nickname : "None", true)
+            .AddField("Id", user.Id, true)
+            .AddField("Account created", user.CreatedAt, true)
+            .AddField("Joined", user.JoinedAt, true);
 
             _log.Debug("Replying...");
             await ReplyAsync(embed: embed.Build());
@@ -127,17 +128,17 @@ namespace Mailwash
             _log.Debug("Building embed...");
             var embed = new Discord.EmbedBuilder();
             embed.WithColor(new Discord.Color(color.R, color.G, color.B))
-            .AddField("Name", Context.Guild.Name)
-            .AddField("Id", Context.Guild.Id)
-            .AddField("Members", Context.Guild.MemberCount)
-            .AddField("Owner", await Context.Client.GetUserAsync(Context.Guild.OwnerId)) /* For some fucking reason, Context.Guild.Owner.Username is null, so we do this instead. */
-            .AddField("Created", Context.Guild.CreatedAt)
-            .AddField("Verification", Context.Guild.VerificationLevel)
-            .AddField("Roles", Context.Guild.Roles.Count)
-            .AddField("Text channels", Context.Guild.TextChannels.Count)
-            .AddField("Voice channels", Context.Guild.VoiceChannels.Count)
-            .AddField("Active threads", Context.Guild.ThreadChannels.Count)
-            .AddField("Boosts", Context.Guild.PremiumSubscriptionCount);
+            .AddField("Name", Context.Guild.Name, true)
+            .AddField("Id", Context.Guild.Id, true)
+            .AddField("Members", Context.Guild.MemberCount, true)
+            .AddField("Owner", await Context.Client.GetUserAsync(Context.Guild.OwnerId), true) /* For some fucking reason, Context.Guild.Owner.Username is null, so we do this instead. */
+            .AddField("Created", Context.Guild.CreatedAt, true)
+            .AddField("Verification", Context.Guild.VerificationLevel, true)
+            .AddField("Roles", Context.Guild.Roles.Count, true)
+            .AddField("Text channels", Context.Guild.TextChannels.Count, true)
+            .AddField("Voice channels", Context.Guild.VoiceChannels.Count, true)
+            .AddField("Active threads", Context.Guild.ThreadChannels.Count, true)
+            .AddField("Boosts", Context.Guild.PremiumSubscriptionCount, true);
 
             _log.Debug("Replying...");
             await ReplyAsync(embed: embed.Build());
