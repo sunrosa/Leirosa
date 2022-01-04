@@ -65,7 +65,29 @@
 
         private Task Log(Discord.LogMessage msg)
         {
-            _log.Info(msg.ToString());
+            switch (msg.Severity)
+            {
+                case Discord.LogSeverity.Debug:
+                case Discord.LogSeverity.Verbose:
+                    _log.Debug(msg.ToString());
+                break;
+                case Discord.LogSeverity.Info:
+                    _log.Info(msg.ToString());
+                break;
+                case Discord.LogSeverity.Warning:
+                    _log.Warn(msg.ToString());
+                break;
+                case Discord.LogSeverity.Error:
+                    _log.Error(msg.ToString());
+                break;
+                case Discord.LogSeverity.Critical:
+                    _log.Fatal(msg.ToString());
+                break;
+                default:
+                    _log.Info(msg.ToString());
+                break;
+            }
+
             return Task.CompletedTask;
         }
     }
