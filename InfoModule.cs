@@ -62,6 +62,16 @@ namespace Mailwash
                 user = Context.User as Discord.WebSocket.SocketGuildUser;
             }
 
+            // Is the target user the bot itself?
+            if (user.Id == Context.Client.CurrentUser.Id)
+            {
+                _log.Debug("\"whois\" was called targeting the bot itself. Sending a friendly message...");
+                await ReplyAsync("That's me!");
+            }
+
+            _log.Debug("Sorting roles...");
+            var roles_sorted = user.Roles.OrderBy(x => x.Position).Reverse(); // Roles sorted by position in server
+
             var color = new Discord.Color(0, 0, 0);
 
             if (bool.Parse(Program.config["embed_color_from_user_avatar"]))
@@ -93,11 +103,8 @@ namespace Mailwash
             {
                 _log.Debug("Config opted to calculate embed color via user's top role.");
 
-                _log.Debug("Sorting roles...");
-                var roles_sorted = user.Roles.OrderBy(x => x.Position); // Roles sorted by position
-
                 _log.Debug("Stepping through roles from top to bottom in order to find a color for the embed...");
-                foreach (var role in roles_sorted.Reverse())
+                foreach (var role in roles_sorted)
                 {
                     if (!(role.Color.R == 0 && role.Color.G == 0 && role.Color.B == 0))
                     {
@@ -114,14 +121,41 @@ namespace Mailwash
                 }
             }
 
+            var role_list = "";
+            var client_list = "";
+            var custom_status = "";
+
+            foreach (var role in roles_sorted)
+            {
+                role_list += role.Name + "\n";
+            }
+            foreach (var client in user.ActiveClients)
+            {
+                client_list += client.ToString() + "\n";
+            }
+
+            try
+            {
+                _log.Debug("Attempting to fetch user's custom status...");
+                custom_status = $" ({(user.Activities.First() as Discord.CustomStatusGame).State})";
+            }
+            catch
+            {
+                _log.Debug("User has no custom status. Continuing...");
+            }
+
             _log.Debug("Building embed...");
             var embed = new Discord.EmbedBuilder();
             embed.WithColor(color)
-            .AddField("Name", user.Username, true)
+            .WithAuthor(new Discord.EmbedAuthorBuilder().WithName(user.Username).WithIconUrl(user.GetAvatarUrl()))
+            .AddField("Name", $"{user.Username}#{user.Discriminator}", true)
             .AddField("Nickname", user.Nickname != null ? user.Nickname : "None", true)
             .AddField("Id", user.Id, true)
             .AddField("Account created", user.CreatedAt, true)
-            .AddField("Joined", user.JoinedAt, true);
+            .AddField("Joined", user.JoinedAt, true)
+            .AddField("Status", $"{user.Status.ToString()}{custom_status}", true)
+            .AddField("Active clients", client_list != "" ? client_list : "None", true)
+            .AddField($"Roles ({roles_sorted.Count()})", role_list, true);
 
             _log.Debug("Replying...");
             await ReplyAsync(embed: embed.Build());

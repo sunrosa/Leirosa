@@ -55,6 +55,12 @@
             var command_handler = new CommandHandler(client, commands);
             _log.Debug("Installing commands...");
             await command_handler.InstallCommandsAsync();
+
+            if (bool.Parse(config["use_custom_status"]))
+            {
+                _log.Debug("Setting custom status...");
+                await client.SetActivityAsync(new Discord.Game(config["status"])); // Apparently you can't set custom statuses for bots, so this is the best we can do.
+            }
         }
 
         private Task Log(Discord.LogMessage msg)
