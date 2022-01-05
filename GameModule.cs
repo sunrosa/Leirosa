@@ -66,5 +66,107 @@ namespace Leirosa
             _log.Debug("Replying...");
             await ReplyAsync($"You draw a {output}!");
         }
+
+        [Discord.Commands.Command("vrclogin")]
+        [Discord.Commands.Summary("[activity (remainder)] Login to the bot's VRChat user database.")]
+        public async Task VRCLoginAsync([Discord.Commands.Remainder]string activity)
+        {
+            _log.Debug("\"vrclogin\" was called!");
+
+            var time = System.DateTime.Now;
+
+            var data = new Dictionary<ulong, string>();
+
+            try
+            {
+                _log.Debug("Reading VRChat users json to local data variable...");
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, string>>(File.ReadAllText(Program.config["vrchat_path"]));
+            }
+            catch
+            {
+                _log.Warn("Could not read VRChat users json. Using blank dictionary.");
+            }
+
+            _log.Debug("Writing activity to local data variable...");
+            data[Context.User.Id] = $"{activity} ({time})";
+
+            _log.Debug("Writing local data variable to file...");
+            File.WriteAllText(Program.config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
+
+            _log.Debug("Replying...");
+            await ReplyAsync($"Logged in at {time}.");
+        }
+
+        [Discord.Commands.Command("vrcstatus")]
+        [Discord.Commands.Summary("See who's online in VRChat.")]
+        public async Task VRCStatusAsync()
+        {
+            _log.Debug("\"vrcstatus\" was called!");
+
+            var data = new Dictionary<ulong, string>();
+
+            try
+            {
+                _log.Debug("Reading VRChat users json to local data variable...");
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, string>>(File.ReadAllText(Program.config["vrchat_path"]));
+            }
+            catch
+            {
+                _log.Warn("Could not read VRChat users json. Using blank dictionary.");
+            }
+
+            if (data.Count == 0)
+            {
+                _log.Debug("Nobody is online. Replying and returning...");
+                await ReplyAsync("Nobody is online.");
+                return;
+            }
+
+            var output = "```\n";
+            foreach (var pair in data)
+            {
+                var user = Context.Client.GetUser(pair.Key);
+                output += $"{user.Username}#{user.Discriminator}: {pair.Value}\n";
+            }
+            output += "```";
+
+            _log.Debug("Replying...");
+            await ReplyAsync(output);
+        }
+
+        [Discord.Commands.Command("vrclogout")]
+        [Discord.Commands.Summary("Log out of the bot's VRChat database.")]
+        public async Task VRCLogoutAsync()
+        {
+            _log.Debug("\"vrclogin\" was called!");
+
+            var data = new Dictionary<ulong, string>();
+
+            try
+            {
+                _log.Debug("Reading VRChat users json to local data variable...");
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, string>>(File.ReadAllText(Program.config["vrchat_path"]));
+            }
+            catch
+            {
+                _log.Warn("Could not read VRChat users json. Using blank dictionary.");
+            }
+
+            if (!data.ContainsKey(Context.User.Id))
+            {
+                _log.Debug("User was not logged in. Replying and returning...");
+                await ReplyAsync("You were not logged in.");
+                return;
+            }
+
+            _log.Debug("Removing user from local data variable...");
+            data.Remove(Context.User.Id);
+
+            _log.Debug("Writing local data variable to file...");
+            File.WriteAllText(Program.config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
+
+            _log.Debug("Replying...");
+            await ReplyAsync($"Logged out at {System.DateTime.Now}.");
+        }
     }
 }
