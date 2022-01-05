@@ -1,4 +1,5 @@
-﻿namespace Leirosa
+﻿// Warning: This bot is designed to be private, used only within one guild per runtime instance.
+namespace Leirosa
 {
     public class Program
     {

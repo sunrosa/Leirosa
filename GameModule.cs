@@ -90,6 +90,12 @@ namespace Leirosa
             _log.Debug("Writing activity to local data variable...");
             data[Context.User.Id] = $"{activity} ({time})";
 
+            if (Program.config.ContainsKey("vrchat_role_id"))
+            {
+                _log.Debug("Giving role...");
+                await (Context.User as Discord.WebSocket.SocketGuildUser).AddRoleAsync(Convert.ToUInt64(Program.config["vrchat_role_id"]));
+            }
+
             _log.Debug("Writing local data variable to file...");
             File.WriteAllText(Program.config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
 
@@ -161,6 +167,12 @@ namespace Leirosa
 
             _log.Debug("Removing user from local data variable...");
             data.Remove(Context.User.Id);
+
+            if (Program.config.ContainsKey("vrchat_role_id"))
+            {
+                _log.Debug("Removing role...");
+                await (Context.User as Discord.WebSocket.SocketGuildUser).RemoveRoleAsync(Convert.ToUInt64(Program.config["vrchat_role_id"]));
+            }
 
             _log.Debug("Writing local data variable to file...");
             File.WriteAllText(Program.config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
