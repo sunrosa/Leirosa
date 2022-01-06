@@ -329,17 +329,13 @@ namespace Leirosa
             await ReplyAsync("Maintenance complete!");
         }
 
-        [Discord.Commands.Command("echo")]
-        [Discord.Commands.Summary("[text (remainder)] Echoes what you say.")]
-        public async Task EchoAsync([Discord.Commands.Remainder]string text)
+        [Discord.Commands.Command("guilds")]
+        [Discord.Commands.Summary("Prints a list of guilds the bot is in.")]
+        public async Task GuildsAsync()
         {
-            _log.Debug("\"echo\" was called!");
+            _log.Debug("\"guilds\" was called!");
 
-            _log.Debug("Deleting caller...");
-            await Context.Message.DeleteAsync();
-
-            _log.Debug("Replying...");
-            await ReplyAsync(text);
+            await ReplyAsync($"```\n{Context.Client.Guilds.Select(guild => guild.Name).Aggregate((a, b) => a + "\n" + b)}\n```");
         }
     }
 }

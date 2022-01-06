@@ -180,5 +180,21 @@ namespace Leirosa
             _log.Debug("Replying...");
             await ReplyAsync($"Logged out at {System.DateTime.Now}.");
         }
+
+
+        [Discord.Commands.Command("echo")]
+        [Discord.Commands.Summary("[text (remainder)] Echoes what you say.")]
+        public async Task EchoAsync([Discord.Commands.Remainder]string text)
+        {
+            _log.Debug("\"echo\" was called!");
+
+            _log.Debug("Deleting caller...");
+            await Context.Message.DeleteAsync();
+
+            _log.Debug("Replying...");
+            await ReplyAsync(text);
+        }
     }
 }
+
+// Cum
