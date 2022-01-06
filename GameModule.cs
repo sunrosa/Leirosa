@@ -68,8 +68,8 @@ namespace Leirosa
         }
 
         [Discord.Commands.Command("vrclogin")]
-        [Discord.Commands.Summary("[activity (remainder)] Login to the bot's VRChat user database.")]
-        public async Task VRCLoginAsync([Discord.Commands.Remainder]string activity)
+        [Discord.Commands.Summary("[activity (remainder) (optional)] Login to the bot's VRChat user database.")]
+        public async Task VRCLoginAsync([Discord.Commands.Remainder]string activity = "(Unspecified)")
         {
             _log.Debug("\"vrclogin\" was called!");
 
