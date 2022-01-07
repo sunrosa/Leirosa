@@ -76,6 +76,7 @@ namespace Leirosa
 
         [Discord.Commands.Command("vrclogin")]
         [Discord.Commands.Summary("[activity (remainder) (optional)] Login to the bot's VRChat user database.")]
+        [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)]
         public async Task VRCLoginAsync([Discord.Commands.Remainder]string activity = "(Unspecified)")
         {
             _log.Debug("\"vrclogin\" was called!");
@@ -177,6 +178,7 @@ namespace Leirosa
 
         [Discord.Commands.Command("vrclogout")]
         [Discord.Commands.Summary("Log out of the bot's VRChat database.")]
+        [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)]
         public async Task VRCLogoutAsync()
         {
             _log.Debug("\"vrclogin\" was called!");
@@ -226,8 +228,15 @@ namespace Leirosa
         {
             _log.Debug("\"echo\" was called!");
 
-            _log.Debug("Deleting caller...");
-            await Context.Message.DeleteAsync();
+            if (!Context.IsPrivate)
+            {
+                _log.Debug("Deleting caller...");
+                await Context.Message.DeleteAsync();
+            }
+            else
+            {
+                _log.Debug("Unable to delete caller due to private context.");
+            }
 
             _log.Debug("Replying...");
             await ReplyAsync(text);

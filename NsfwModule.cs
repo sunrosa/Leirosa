@@ -85,7 +85,7 @@ namespace Leirosa
         {
             try
             {
-                _log.Debug("\"manygelbooru\" was called!");
+                _log.Debug("\"xgelbooru\" was called!");
 
                 if (count > 25)
                 {

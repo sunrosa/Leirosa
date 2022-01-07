@@ -111,7 +111,8 @@ namespace Leirosa
         [Discord.Commands.Command("userinfo")]
         [Discord.Commands.Alias("whois")]
         [Discord.Commands.Summary("[user (optional)] Prints data about you or somebody else.")]
-        public async Task WhoisAsync(Discord.WebSocket.SocketGuildUser user = null) // May fail when pinging other users
+        [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)] // Could be made workable in DM.
+        public async Task WhoisAsync(Discord.WebSocket.SocketGuildUser user = null) // May fail when pinging other users.
         {
             _log.Debug("\"whois\" was called!");
 
@@ -173,6 +174,7 @@ namespace Leirosa
 
         [Discord.Commands.Command("serverinfo")]
         [Discord.Commands.Summary("Prints general server info.")]
+        [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)]
         public async Task ServerInfoAsync()
         {
             _log.Debug("\"serverinfo\" was called!");
@@ -221,6 +223,7 @@ namespace Leirosa
 
         [Discord.Commands.Command("permissions")]
         [Discord.Commands.Summary("[user (optional)] Prints a user's guild permissions.")]
+        [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)]
         public async Task PermissionsAsync(Discord.WebSocket.SocketGuildUser user = null)
         {
             _log.Debug("\"permissions\" was called!");
@@ -246,6 +249,7 @@ namespace Leirosa
 
         [Discord.Commands.Command("cpermissions")]
         [Discord.Commands.Summary("[user (optional), channel (optional)] Prints a user's channel permissions.")]
+        [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)]
         public async Task CPermissionsAsync(Discord.WebSocket.SocketGuildUser user = null, Discord.WebSocket.SocketGuildChannel channel = null)
         {
             _log.Debug("\"cpermissions\" was called!");
@@ -316,6 +320,7 @@ namespace Leirosa
 
         [Discord.Commands.Command("maintenance")]
         [Discord.Commands.Summary("Maintenance function that solves some problems.")]
+        [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)]
         public async Task MaintenanceAsync()
         {
             _log.Debug("\"maintenance\" was called!");

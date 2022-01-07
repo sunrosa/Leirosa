@@ -54,7 +54,14 @@ namespace Leirosa
 
             // Create a WebSocket-based command context based on the message
             var context = new Discord.Commands.SocketCommandContext(_client, message);
-            _log.Debug($"Context created. Command was \"{context.Message.Content}\" sent by {context.User.Username} ({context.User.Id}) in channel {context.Channel.Id} in guild {context.Guild.Id}.");
+            if (!context.IsPrivate)
+            {
+                _log.Debug($"Context created. Command was \"{context.Message.Content}\" sent by {context.User.Username} ({context.User.Id}) in channel {context.Channel.Id} in guild {context.Guild.Id}.");
+            }
+            else
+            {
+                _log.Debug($"Context created. Command was \"{context.Message.Content}\" sent by {context.User.Username} ({context.User.Id}) in channel {context.Channel.Id} (DM).");
+            }
 
             // Execute the command with the command context we just
             // created, along with the service provider for precondition checks.
