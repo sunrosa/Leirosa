@@ -26,6 +26,12 @@ namespace Leirosa
 
             _log.Info("Setup logger. Beginning of MainAsync().");
 
+            #if DEBUG
+            _log.Info("Running in DEBUG.");
+            #elif RELEASE
+            _log.Info("Running in RELEASE.");
+            #endif
+
             _log.Debug("Creating client...");
             Client = new Discord.WebSocket.DiscordSocketClient(new Discord.WebSocket.DiscordSocketConfig(){
                 LogLevel = Discord.LogSeverity.Debug,

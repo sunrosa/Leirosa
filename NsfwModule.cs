@@ -31,7 +31,7 @@ namespace Leirosa
             }
             catch
             {
-                _log.Debug("An exception was thrown. Replying with \"Not found.\"");
+                _log.Warn("An exception was thrown. Replying with \"Not found.\"");
                 await ReplyAsync("Not found.");
             }
         }
@@ -72,7 +72,7 @@ namespace Leirosa
             }
             catch
             {
-                _log.Debug("An exception was thrown. Replying with \"Not found.\"");
+                _log.Warn("An exception was thrown. Replying with \"Not found.\"");
                 await ReplyAsync("Not found.");
             }
         }
@@ -132,7 +132,7 @@ namespace Leirosa
             }
             catch
             {
-                _log.Debug("An exception was thrown. Replying with \"Not found.\"");
+                _log.Warn("An exception was thrown. Replying with \"Not found.\"");
                 await ReplyAsync("Not found.");
             }
         }

@@ -335,6 +335,7 @@ namespace Leirosa
         {
             _log.Debug("\"guilds\" was called!");
 
+            _log.Debug("Replying...");
             await ReplyAsync($"```\n{Context.Client.Guilds.Select(guild => guild.Name).Aggregate((a, b) => a + "\n" + b)}\n```");
         }
     }

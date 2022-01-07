@@ -72,6 +72,8 @@ namespace Leirosa
             await ReplyAsync($"You draw a {output}!");
         }
 
+        // These VRC commands, and any other long-term stateful (remembers shit between calls) commands, should be ported over to using a database, as opposed to JSON.
+
         [Discord.Commands.Command("vrclogin")]
         [Discord.Commands.Summary("[activity (remainder) (optional)] Login to the bot's VRChat user database.")]
         public async Task VRCLoginAsync([Discord.Commands.Remainder]string activity = "(Unspecified)")
