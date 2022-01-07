@@ -10,7 +10,7 @@ namespace Leirosa
 
             var color = new Discord.Color(0, 0, 0);
 
-            if (bool.Parse(Program.config["embed_color_from_user_avatar"]))
+            if (bool.Parse(Program.Config["embed_color_from_user_avatar"]))
             {
                 _log.Debug("Config opted to calculate embed color via user avatar.");
 
@@ -79,7 +79,7 @@ namespace Leirosa
             }
 
             _log.Debug("Obtaining list of all commands...");
-            var commands = Program.commands.Commands.ToList();
+            var commands = Program.Commands.Commands.ToList();
             _log.Debug("Formatting as help text...");
             var output = "```\n";
             foreach (var command in commands)
@@ -97,7 +97,7 @@ namespace Leirosa
         public async Task SourceAsync()
         {
             _log.Debug("\"source\" was called!");
-            await ReplyAsync(Program.config["source"]);
+            await ReplyAsync(Program.Config["source"]);
         }
 
         [Discord.Commands.Command("invite")]
@@ -105,7 +105,7 @@ namespace Leirosa
         public async Task InviteAsync()
         {
             _log.Debug("\"invite\" was called!");
-            await ReplyAsync(Program.config["invite"]);
+            await ReplyAsync(Program.Config["invite"]);
         }
 
         [Discord.Commands.Command("userinfo")]
@@ -292,7 +292,7 @@ namespace Leirosa
         {
             _log.Debug("\"suggest\" was called!");
 
-            using (var writer = File.AppendText(Program.config["suggestions_path"]))
+            using (var writer = File.AppendText(Program.Config["suggestions_path"]))
             {
                 writer.WriteLine($"{DateTime.Now} - {Context.User.Username} [{Context.User.Id}] - {suggestion}");
             }
@@ -306,7 +306,7 @@ namespace Leirosa
         {
             _log.Debug("\"report\" was called!");
 
-            using (var writer = File.AppendText(Program.config["reports_path"]))
+            using (var writer = File.AppendText(Program.Config["reports_path"]))
             {
                 writer.WriteLine($"{DateTime.Now} - {Context.User.Username} [{Context.User.Id}] - {report}");
             }

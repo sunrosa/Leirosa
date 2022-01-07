@@ -15,7 +15,7 @@ namespace Leirosa
                 _log.Debug("\"gelbooru\" was called!");
 
                 _log.Debug("Obtaining default tags...");
-                var default_tags = Program.config["default_gelbooru_tags"];
+                var default_tags = Program.Config["default_gelbooru_tags"];
 
                 _log.Debug("Formatting requested tags...");
                 tags_str = tags_str.Replace(" ", "+"); // Format tags for API request
@@ -47,7 +47,7 @@ namespace Leirosa
                 _log.Debug("\"mgelbooru\" was called!");
 
                 _log.Debug("Obtaining default tags...");
-                var default_tags = Program.config["default_gelbooru_tags"];
+                var default_tags = Program.Config["default_gelbooru_tags"];
 
                 _log.Debug("Formatting requested tags...");
                 tags_str = tags_str.Replace(" ", "+"); // Format tags for API request
@@ -95,7 +95,7 @@ namespace Leirosa
                 }
 
                 _log.Debug("Obtaining default tags...");
-                var default_tags = Program.config["default_gelbooru_tags"];
+                var default_tags = Program.Config["default_gelbooru_tags"];
 
                 _log.Debug("Formatting requested tags...");
                 tags_str = tags_str.Replace(" ", "+"); // Format tags for API request

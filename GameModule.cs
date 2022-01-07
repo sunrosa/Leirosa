@@ -4,6 +4,11 @@ namespace Leirosa
     {
         private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
 
+        private string FormatTimeSpan(TimeSpan timeSpan)
+        {
+            return $"{Math.Floor(timeSpan.TotalHours)}:{timeSpan.ToString(@"mm\:ss")}";
+        }
+
         [Discord.Commands.Command("flip")]
         [Discord.Commands.Summary("Flips a coin.")]
         public async Task FlipAsync()
@@ -73,34 +78,50 @@ namespace Leirosa
         {
             _log.Debug("\"vrclogin\" was called!");
 
+            _log.Debug("Getting current time...");
             var time = System.DateTime.Now;
 
-            var data = new Dictionary<ulong, string>();
+            _log.Debug("Creating local Dictionary<ulong, VRChatSession>...");
+            var data = new Dictionary<ulong, VRChatSession>();
 
             try
             {
-                _log.Debug("Reading VRChat users json to local data variable...");
-                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, string>>(File.ReadAllText(Program.config["vrchat_path"]));
+                _log.Debug("Reading VRChat users json to local dictionary...");
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config["vrchat_path"]));
             }
             catch
             {
                 _log.Warn("Could not read VRChat users json. Using blank dictionary.");
             }
 
-            _log.Debug("Writing activity to local data variable...");
-            data[Context.User.Id] = $"{activity} ({time})";
-
-            if (Program.config.ContainsKey("vrchat_role_id"))
+            if (data.ContainsKey(Context.User.Id))
             {
-                _log.Debug("Giving role...");
-                await (Context.User as Discord.WebSocket.SocketGuildUser).AddRoleAsync(Convert.ToUInt64(Program.config["vrchat_role_id"]));
+                _log.Debug("Session already exists. Writing Activity and UpdateTime. Keeping StartTime...");
+                var session = data[Context.User.Id];
+                session.Activity = activity;
+                session.UpdateTime = time;
+                data[Context.User.Id] = session;
+
+                _log.Debug("Replying...");
+                await ReplyAsync($"Updating session...");
+            }
+            else
+            {
+                _log.Debug("Writing new session data to local dictionary...");
+                data[Context.User.Id] = new VRChatSession(){Activity = activity, StartTime = time};
+
+                _log.Debug("Replying...");
+                await ReplyAsync($"Logging in at {time}...");
             }
 
-            _log.Debug("Writing local data variable to file...");
-            File.WriteAllText(Program.config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
+            if (Program.Config.ContainsKey("vrchat_role_id"))
+            {
+                _log.Debug("Giving role...");
+                await (Context.User as Discord.WebSocket.SocketGuildUser).AddRoleAsync(Convert.ToUInt64(Program.Config["vrchat_role_id"]));
+            }
 
-            _log.Debug("Replying...");
-            await ReplyAsync($"Logged in at {time}.");
+            _log.Debug("Writing local dictionary to file...");
+            File.WriteAllText(Program.Config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
         }
 
         [Discord.Commands.Command("vrcstatus")]
@@ -109,12 +130,13 @@ namespace Leirosa
         {
             _log.Debug("\"vrcstatus\" was called!");
 
-            var data = new Dictionary<ulong, string>();
+            _log.Debug("Creating local Dictionary<ulong, VRChatSession>...");
+            var data = new Dictionary<ulong, VRChatSession>();
 
             try
             {
-                _log.Debug("Reading VRChat users json to local data variable...");
-                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, string>>(File.ReadAllText(Program.config["vrchat_path"]));
+                _log.Debug("Reading VRChat users json to local dictionary...");
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config["vrchat_path"]));
             }
             catch
             {
@@ -128,11 +150,22 @@ namespace Leirosa
                 return;
             }
 
+            _log.Debug("Sorting sessions by start time...");
+            var data_sorted = data.OrderBy(x => x.Value.StartTime);
+
             var output = "```\n";
-            foreach (var pair in data)
+            foreach (var pair in data_sorted)
             {
                 var user = Context.Client.GetUser(pair.Key);
-                output += $"{user.Username}#{user.Discriminator}: {pair.Value}\n";
+                var elapsed = DateTime.Now - pair.Value.StartTime;
+                var elapsed_update = DateTime.Now - pair.Value.UpdateTime;
+                var last_updated = "";
+                if (pair.Value.UpdateTime != new DateTime())
+                {
+                    _log.Debug("Session has been updated at least once. Adding last updated detail.");
+                    last_updated = $" (last updated {FormatTimeSpan(elapsed_update)} ago)";
+                }
+                output += $"[{FormatTimeSpan(elapsed)}] {user.Username}#{user.Discriminator}: {pair.Value.Activity}{last_updated}\n";
             }
             output += "```";
 
@@ -146,12 +179,13 @@ namespace Leirosa
         {
             _log.Debug("\"vrclogin\" was called!");
 
-            var data = new Dictionary<ulong, string>();
+            _log.Debug("Creating local Dictionary<ulong, VRChatSession>...");
+            var data = new Dictionary<ulong, VRChatSession>();
 
             try
             {
-                _log.Debug("Reading VRChat users json to local data variable...");
-                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, string>>(File.ReadAllText(Program.config["vrchat_path"]));
+                _log.Debug("Reading VRChat users json to local dictionary...");
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config["vrchat_path"]));
             }
             catch
             {
@@ -165,20 +199,22 @@ namespace Leirosa
                 return;
             }
 
-            _log.Debug("Removing user from local data variable...");
+            var time_elapsed = DateTime.Now - data[Context.User.Id].StartTime;
+
+            _log.Debug("Removing user from local dictionary...");
             data.Remove(Context.User.Id);
 
-            if (Program.config.ContainsKey("vrchat_role_id"))
+            if (Program.Config.ContainsKey("vrchat_role_id"))
             {
                 _log.Debug("Removing role...");
-                await (Context.User as Discord.WebSocket.SocketGuildUser).RemoveRoleAsync(Convert.ToUInt64(Program.config["vrchat_role_id"]));
+                await (Context.User as Discord.WebSocket.SocketGuildUser).RemoveRoleAsync(Convert.ToUInt64(Program.Config["vrchat_role_id"]));
             }
 
-            _log.Debug("Writing local data variable to file...");
-            File.WriteAllText(Program.config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
+            _log.Debug("Writing local dictionary to file...");
+            File.WriteAllText(Program.Config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
 
             _log.Debug("Replying...");
-            await ReplyAsync($"Logged out at {System.DateTime.Now}.");
+            await ReplyAsync($"Session lasted {FormatTimeSpan(time_elapsed)}.");
         }
 
 
