@@ -166,7 +166,7 @@ namespace Leirosa
                 if (pair.Value.UpdateTime != new DateTime())
                 {
                     _log.Debug("Session has been updated at least once. Adding last updated detail.");
-                    last_updated = $" (last updated {FormatTimeSpan(elapsed_update)} ago)";
+                    last_updated = $" (updated {FormatTimeSpan(elapsed_update)} ago)";
                 }
                 output += $"[{FormatTimeSpan(elapsed)}] {user.Username}#{user.Discriminator}: {pair.Value.Activity}{last_updated}\n";
             }
