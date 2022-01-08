@@ -18,19 +18,26 @@ namespace Leirosa
                 var logfile = new NLog.Targets.FileTarget("logfile"){FileName="log.log"};
                 var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
 
+#if RELEASE
+                config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logfile);
                 config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logconsole);
+#else
                 config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logfile);
+                config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logconsole);
+#endif
 
                 NLog.LogManager.Configuration = config;
             }
 
             _log.Info("Setup logger. Beginning of MainAsync().");
 
-            #if DEBUG
-            _log.Info("Running in DEBUG.");
-            #elif RELEASE
+#if RELEASE
             _log.Info("Running in RELEASE.");
-            #endif
+            _log.Info("File log level is INFO. Console log level is INFO.");
+#else
+            _log.Info("Running in DEBUG.");
+            _log.Info("File log level is DEBUG. Console log level is INFO.");
+#endif
 
             _log.Debug("Creating client...");
             Client = new Discord.WebSocket.DiscordSocketClient(new Discord.WebSocket.DiscordSocketConfig(){
