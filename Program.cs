@@ -62,6 +62,12 @@ namespace Leirosa
             await Task.Delay(-1); // Block the thread to prevent the program from closing (infinite wait)
         }
 
+        public static void Shutdown()
+        {
+            _log.Info("Exiting cleanly...");
+            Environment.Exit(0);
+        }
+
         private async Task Ready()
         {
             _log.Debug("Client ready. Initializing CommandService...");

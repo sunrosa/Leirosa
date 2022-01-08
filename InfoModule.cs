@@ -343,5 +343,24 @@ namespace Leirosa
             _log.Debug("Replying...");
             await ReplyAsync($"```\n{Context.Client.Guilds.Select(guild => guild.Name).Aggregate((a, b) => a + "\n" + b)}\n```");
         }
+
+        [Discord.Commands.Command("shutdown")]
+        [Discord.Commands.Summary("(Developer only) Shuts the bot down.")]
+        public async Task ShutdownAsync()
+        {
+            _log.Debug("\"shutdown\" was called!");
+
+            if (Context.User.Id == Convert.ToUInt64(Program.Config["developer_id"]))
+            {
+                _log.Info("Calling Program.Shutdown()...");
+                await ReplyAsync("Goodbye.");
+                Program.Shutdown();
+            }
+            else
+            {
+                _log.Debug("Caller is not listed as developer. Doing nothing...");
+                await ReplyAsync("Insufficient permissions.");
+            }
+        }
     }
 }
