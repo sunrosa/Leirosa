@@ -372,5 +372,23 @@ namespace Leirosa
                 await ReplyAsync("Insufficient permissions.");
             }
         }
+
+        [Discord.Commands.Command("runtime")]
+        [Discord.Commands.Summary("Fetches bot runtime info.")]
+        public async Task RuntimeAsync()
+        {
+            _log.Debug("\"runtime\" was called!");
+
+            _log.Debug("Fetching build configuration...");
+            var build_configuration = "UNKNOWN";
+#if DEBUG
+            build_configuration = "DEBUG";
+#elif RELEASE
+            build_configuration = "RELEASE";
+#endif
+
+            _log.Debug("Replying...");
+            await ReplyAsync($"Running on {System.Net.Dns.GetHostName()} on .NET {Environment.Version} with build configuration {build_configuration}.");
+        }
     }
 }
