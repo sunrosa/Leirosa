@@ -388,7 +388,7 @@ namespace Leirosa
 #endif
 
             _log.Debug("Replying...");
-            await ReplyAsync($"Running on {System.Net.Dns.GetHostName()} on .NET {Environment.Version} with build configuration {build_configuration}.");
+            await ReplyAsync($"Running {Program.Config["name"]} {new LibGit2Sharp.Repository(".").Head.Tip.Sha[0..7]} on {System.Net.Dns.GetHostName()} on .NET {Environment.Version} with build configuration {build_configuration}.");
         }
     }
 }
