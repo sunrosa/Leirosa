@@ -387,8 +387,38 @@ namespace Leirosa
             build_configuration = "RELEASE";
 #endif
 
+            var commit_sha = "";
+
+            _log.Debug("Fetching git HEAD sha...");
+            try
+            {
+                _log.Debug("Constructing process...");
+                using (var p = new System.Diagnostics.Process())
+                {
+                    p.StartInfo.UseShellExecute = false;
+                    p.StartInfo.RedirectStandardOutput = true;
+                    p.StartInfo.FileName = "git";
+                    p.StartInfo.Arguments = "rev-parse HEAD";
+
+                    _log.Debug("Starting process...");
+                    p.Start();
+
+                    _log.Debug("Reading from process...");
+                    commit_sha = p.StandardOutput.ReadToEnd();
+
+                    _log.Debug("Awaiting process exit...");
+                    p.WaitForExit();
+                    _log.Debug("Successfully exited process.");
+                }
+            }
+            catch
+            {
+                _log.Error("Git is not installed. Command will not have full output. Replying with request to install git...");
+                await ReplyAsync("Please install git on the host server for full runtime output.");
+            }
+
             _log.Debug("Replying...");
-            await ReplyAsync($"Running {Program.Config["name"]} {new LibGit2Sharp.Repository(".").Head.Tip.Sha[0..7]} on {System.Net.Dns.GetHostName()} on .NET {Environment.Version} with build configuration {build_configuration}.");
+            await ReplyAsync($"Running {Program.Config["name"]}{(commit_sha != "" ? $" {commit_sha[0..7]}" : "")} on {System.Net.Dns.GetHostName()} on .NET {Environment.Version} with build configuration {build_configuration}.");
         }
     }
 }
