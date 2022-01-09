@@ -344,6 +344,16 @@ namespace Leirosa
             await ReplyAsync($"```\n{Context.Client.Guilds.Select(guild => guild.Name).Aggregate((a, b) => a + "\n" + b)}\n```");
         }
 
+        [Discord.Commands.Command("channels")]
+        [Discord.Commands.Summary("Prints a list of channels in the guild.")]
+        public async Task ChannelsAsync()
+        {
+            _log.Debug("\"channels\" was called!");
+
+            _log.Debug("Replying...");
+            await ReplyAsync($"```\n{Context.Guild.Channels.OrderBy(channel => channel.Name).Select(channel => channel.Name).Aggregate((a, b) => a + "\n" + b)}\n```");
+        }
+
         [Discord.Commands.Command("shutdown")]
         [Discord.Commands.Summary("(Developer only) Shuts the bot down.")]
         public async Task ShutdownAsync()
