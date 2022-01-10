@@ -418,7 +418,7 @@ namespace Leirosa
             }
 
             _log.Debug("Replying...");
-            await ReplyAsync($"Running {Program.Config["name"]}{(commit_sha != "" ? $" {commit_sha[0..7]}" : "")} on {System.Net.Dns.GetHostName()} on .NET {Environment.Version} with build configuration {build_configuration}.");
+            await ReplyAsync($"Running {Program.Config["name"]}{(commit_sha != "" ? $" {commit_sha[0..7]}" : "")} on .NET {Environment.Version} on {System.Net.Dns.GetHostName()} with build configuration {build_configuration}.");
         }
     }
 }
