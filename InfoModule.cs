@@ -8,7 +8,7 @@ namespace Leirosa
         {
             _log.Debug("A color to be used with an embed targeting a user has been requested.");
 
-            var color = new Discord.Color(0, 0, 0);
+            var discord_color = new Discord.Color(0, 0, 0);
 
             if (bool.Parse(Program.Config["embed_color_from_user_avatar"]))
             {
@@ -21,18 +21,13 @@ namespace Leirosa
                     var response = await client.GetAsync(user.GetAvatarUrl());
                     _log.Debug("Converting HTTP response to image...");
                     var ms = new MemoryStream(await response.Content.ReadAsByteArrayAsync());
-                    var img = System.Drawing.Image.FromStream(ms);
-                    var bmp = new System.Drawing.Bitmap(1, 1);
 
-                    _log.Debug("Interpolating (averaging) image color...");
-                    using (var g = System.Drawing.Graphics.FromImage(bmp))
+                    using (var image = new ImageMagick.MagickImage(ms))
                     {
-                        g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                        g.DrawImage(img, new System.Drawing.Rectangle(0, 0, 1, 1));
+                        image.Resize(1, 1);
+                        var color = image.GetPixels().First().ToColor();
+                        discord_color = new Discord.Color(color.R, color.G, color.B);
                     }
-
-                    var pixel = bmp.GetPixel(0, 0);
-                    color = new Discord.Color(pixel.R, pixel.G, pixel.B);
                 }
             }
             else
@@ -48,19 +43,19 @@ namespace Leirosa
                     if (!(role.Color.R == 0 && role.Color.G == 0 && role.Color.B == 0))
                     {
                         _log.Debug("Found a role color for the embed.");
-                        color = role.Color;
+                        discord_color = role.Color;
                         break;
                     }
                 }
 
-                if (color.R == 0 && color.G == 0 && color.B == 0)
+                if (discord_color.R == 0 && discord_color.G == 0 && discord_color.B == 0)
                 {
                     _log.Debug("No role color was found for the embed. Setting the color to 200, 200, 200...");
-                    color = new Discord.Color(200, 200, 200);
+                    discord_color = new Discord.Color(200, 200, 200);
                 }
             }
 
-            return color;
+            return discord_color;
         }
 
         [Discord.Commands.Command("help")]
@@ -179,7 +174,7 @@ namespace Leirosa
         {
             _log.Debug("\"serverinfo\" was called!");
 
-            var color = new Discord.Color(0, 0, 0);
+            var discord_color = new Discord.Color(0, 0, 0);
 
             // Some bullshit to get the average color of the server icon
             using (var client = new HttpClient())
@@ -188,23 +183,18 @@ namespace Leirosa
                 var response = await client.GetAsync(Context.Guild.IconUrl);
                 _log.Debug("Converting HTTP response to image...");
                 var ms = new MemoryStream(await response.Content.ReadAsByteArrayAsync());
-                var img = System.Drawing.Image.FromStream(ms);
-                var bmp = new System.Drawing.Bitmap(1, 1);
 
-                _log.Debug("Interpolating (averaging) image color...");
-                using (var g = System.Drawing.Graphics.FromImage(bmp))
+                using (var image = new ImageMagick.MagickImage(ms))
                 {
-                    g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                    g.DrawImage(img, new System.Drawing.Rectangle(0, 0, 1, 1));
+                    image.Resize(1, 1);
+                    var color = image.GetPixels().First().ToColor();
+                    discord_color = new Discord.Color(color.R, color.G, color.B);
                 }
-
-                var pixel = bmp.GetPixel(0, 0);
-                color = new Discord.Color(pixel.R, pixel.G, pixel.B);
             }
 
             _log.Debug("Building embed...");
             var embed = new Discord.EmbedBuilder();
-            embed.WithColor(color)
+            embed.WithColor(discord_color)
             .AddField("Name", Context.Guild.Name, true)
             .AddField("Id", Context.Guild.Id, true)
             .AddField("Members", Context.Guild.MemberCount, true)
