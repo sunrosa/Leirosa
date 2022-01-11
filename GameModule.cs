@@ -101,6 +101,7 @@ namespace Leirosa
             {
                 _log.Debug("Session already exists. Writing Activity and UpdateTime. Keeping StartTime...");
                 var session = data[Context.User.Id];
+                session.IsUpdated = true;
                 session.Activity = activity;
                 session.UpdateTime = time;
                 data[Context.User.Id] = session;
@@ -119,8 +120,16 @@ namespace Leirosa
 
             if (Program.Config.ContainsKey("vrchat_role_id"))
             {
-                _log.Debug("Giving role...");
-                await (Context.User as Discord.WebSocket.SocketGuildUser).AddRoleAsync(Convert.ToUInt64(Program.Config["vrchat_role_id"]));
+                try
+                {
+                    _log.Debug("Giving role...");
+                    await (Context.User as Discord.WebSocket.SocketGuildUser).AddRoleAsync(Convert.ToUInt64(Program.Config["vrchat_role_id"]));
+                }
+                catch
+                {
+                    _log.Error("Could not give VRChat online role.");
+                    await ReplyAsync("Could not give VRChat online role. Make sure my bot role is above the role you are trying to apply!");
+                }
             }
 
             _log.Debug("Writing local dictionary to file...");
@@ -132,6 +141,9 @@ namespace Leirosa
         public async Task VRCStatusAsync()
         {
             _log.Debug("\"vrcstatus\" was called!");
+
+            _log.Debug("Getting current time...");
+            var time = System.DateTime.Now;
 
             _log.Debug("Creating local Dictionary<ulong, VRChatSession>...");
             var data = new Dictionary<ulong, VRChatSession>();
@@ -160,15 +172,28 @@ namespace Leirosa
             foreach (var pair in data_sorted)
             {
                 var user = Context.Client.GetUser(pair.Key);
-                var elapsed = DateTime.Now - pair.Value.StartTime;
-                var elapsed_update = DateTime.Now - pair.Value.UpdateTime;
+                var elapsed = time - pair.Value.StartTime;
+                var elapsed_update = time - pair.Value.UpdateTime;
+                var elapsed_paused = time - pair.Value.PauseTime;
+                var pause_eta = pair.Value.UnpauseTime - pair.Value.PauseTime;
                 var last_updated = "";
-                if (pair.Value.UpdateTime != new DateTime())
+                var paused = "";
+                if (pair.Value.IsUpdated)
                 {
-                    _log.Debug("Session has been updated at least once. Adding last updated detail.");
+                    _log.Debug("Session has been updated at least once. Adding last updated detail...");
                     last_updated = $" (updated {FormatTimeSpan(elapsed_update)} ago)";
                 }
-                output += $"[{FormatTimeSpan(elapsed)}] {user.Username}#{user.Discriminator}: {pair.Value.Activity}{last_updated}\n";
+                if (pair.Value.IsPaused && pair.Value.UnpauseTime == new DateTime())
+                {
+                    _log.Debug("Session is paused. Adding paused detail without ETA...");
+                    paused = $" (AFK {FormatTimeSpan(elapsed_paused)})";
+                }
+                else if (pair.Value.IsPaused && pair.Value.UnpauseTime != new DateTime())
+                {
+                    _log.Debug("Session is paused. Adding paused detail wtih ETA...");
+                    paused = $" (AFK {FormatTimeSpan(elapsed_paused)} / {FormatTimeSpan(pause_eta)})";
+                }
+                output += $"[{FormatTimeSpan(elapsed)}] {user.Username}#{user.Discriminator}: {pair.Value.Activity}{last_updated}{paused}\n";
             }
             output += "```";
 
@@ -198,8 +223,8 @@ namespace Leirosa
 
             if (!data.ContainsKey(Context.User.Id))
             {
-                _log.Debug("User was not logged in. Replying and returning...");
-                await ReplyAsync("You were not logged in.");
+                _log.Debug("User is not logged in. Replying and returning...");
+                await ReplyAsync("You are not logged in.");
                 return;
             }
 
@@ -210,8 +235,16 @@ namespace Leirosa
 
             if (Program.Config.ContainsKey("vrchat_role_id"))
             {
-                _log.Debug("Removing role...");
-                await (Context.User as Discord.WebSocket.SocketGuildUser).RemoveRoleAsync(Convert.ToUInt64(Program.Config["vrchat_role_id"]));
+                try
+                {
+                    _log.Debug("Removing role...");
+                    await (Context.User as Discord.WebSocket.SocketGuildUser).RemoveRoleAsync(Convert.ToUInt64(Program.Config["vrchat_role_id"]));
+                }
+                catch
+                {
+                    _log.Error("Could not take VRChat online role.");
+                    await ReplyAsync("Could not take VRChat online role. Make sure my bot role is above the role you are trying to apply!");
+                }
             }
 
             _log.Debug("Writing local dictionary to file...");
@@ -221,6 +254,95 @@ namespace Leirosa
             await ReplyAsync($"Session lasted {FormatTimeSpan(time_elapsed)}.");
         }
 
+        [Discord.Commands.Command("vrcpause")]
+        [Discord.Commands.Summary("[minutes (optional)] Set yourself as AFK in VRChat. You may specify an ETA for your return.")]
+        public async Task VRCPauseAsync(uint eta = 0)
+        {
+            _log.Debug("\"vrcpause\" was called!");
+
+            _log.Debug("Getting current time...");
+            var time = System.DateTime.Now;
+
+            _log.Debug("Creating local Dictionary<ulong, VRChatSession>...");
+            var data = new Dictionary<ulong, VRChatSession>();
+
+            try
+            {
+                _log.Debug("Reading VRChat users json to local dictionary...");
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config["vrchat_path"]));
+            }
+            catch
+            {
+                _log.Warn("Could not read VRChat users json. Using blank dictionary.");
+            }
+
+            if (!data.ContainsKey(Context.User.Id))
+            {
+                _log.Debug("User is not logged in. Replying and returning...");
+                await ReplyAsync("You are not logged in.");
+                return;
+            }
+
+            var session = data[Context.User.Id];
+            session.IsPaused = true;
+            session.PauseTime = time;
+            if (eta != 0) session.UnpauseTime = time.AddMinutes(eta);
+            data[Context.User.Id] = session;
+
+            _log.Debug("Writing local dictionary to file...");
+            File.WriteAllText(Program.Config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
+
+            _log.Debug("Replying...");
+            if (eta == 0) await ReplyAsync("Going AFK...");
+            else if (eta == 1) await ReplyAsync($"Going AFK for {eta} minute...");
+            else await ReplyAsync($"Going AFK for {eta} minutes...");
+        }
+
+        [Discord.Commands.Command("vrcunpause")]
+        [Discord.Commands.Summary("Return from AFK in VRChat.")]
+        public async Task VRCUnpauseAsync()
+        {
+            _log.Debug("\"vrcunpause\" was called!");
+
+            _log.Debug("Getting current time...");
+            var time = System.DateTime.Now;
+
+            _log.Debug("Creating local Dictionary<ulong, VRChatSession>...");
+            var data = new Dictionary<ulong, VRChatSession>();
+
+            try
+            {
+                _log.Debug("Reading VRChat users json to local dictionary...");
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config["vrchat_path"]));
+            }
+            catch
+            {
+                _log.Warn("Could not read VRChat users json. Using blank dictionary.");
+            }
+
+            if (!data.ContainsKey(Context.User.Id))
+            {
+                _log.Debug("User is not logged in. Replying and returning...");
+                await ReplyAsync("You are not logged in.");
+                return;
+            }
+
+            var session = data[Context.User.Id];
+            var elapsed_paused = time - session.PauseTime;
+            var pause_eta = session.UnpauseTime - session.PauseTime;
+            var has_eta = session.UnpauseTime != new DateTime();
+            session.IsPaused = false;
+            session.PauseTime = new DateTime();
+            session.UnpauseTime = new DateTime();
+            data[Context.User.Id] = session;
+
+            _log.Debug("Writing local dictionary to file...");
+            File.WriteAllText(Program.Config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
+
+            _log.Debug("Replying...");
+            if (has_eta) await ReplyAsync($"You were AFK for {FormatTimeSpan(elapsed_paused)} out of {FormatTimeSpan(pause_eta)}.");
+            else await ReplyAsync($"You were AFK for {FormatTimeSpan(elapsed_paused)}.");
+        }
 
         [Discord.Commands.Command("echo")]
         [Discord.Commands.Summary("[text (remainder)] Echoes what you say.")]
