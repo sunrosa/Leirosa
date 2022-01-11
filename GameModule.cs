@@ -115,7 +115,7 @@ namespace Leirosa
                 data[Context.User.Id] = new VRChatSession(){Activity = activity, StartTime = time};
 
                 _log.Debug("Replying...");
-                await ReplyAsync($"Logging in at {time}...");
+                await ReplyAsync($"Logging in at {time.ToString(Program.Config["datetime_format"])}...");
             }
 
             if (Program.Config.ContainsKey("vrchat_role_id"))
