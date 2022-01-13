@@ -288,7 +288,7 @@ namespace Leirosa
 
             using (var writer = File.AppendText(Program.Config["suggestions_path"]))
             {
-                writer.WriteLine($"{DateTime.Now} - {Context.User.Username} [{Context.User.Id}] - {suggestion}");
+                writer.WriteLine($"{DateTime.Now.ToString(Program.Config["datetime_format"])} - {Context.User.Username} [{Context.User.Id}] - {suggestion}");
             }
 
             await ReplyAsync("Thank you for your suggestion!");
@@ -302,7 +302,7 @@ namespace Leirosa
 
             using (var writer = File.AppendText(Program.Config["reports_path"]))
             {
-                writer.WriteLine($"{DateTime.Now} - {Context.User.Username} [{Context.User.Id}] - {report}");
+                writer.WriteLine($"{DateTime.Now.ToString(Program.Config["datetime_format"])} - {Context.User.Username} [{Context.User.Id}] - {report}");
             }
 
             await ReplyAsync("Thank you for your error report!");

@@ -249,7 +249,7 @@ namespace Leirosa
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)]
         public async Task VRCLogoutAsync()
         {
-            _log.Debug("\"vrclogin\" was called!");
+            _log.Debug("\"vrclogout\" was called!");
 
             _log.Debug("Creating local Dictionary<ulong, VRChatSession>...");
             var data = new Dictionary<ulong, VRChatSession>();
