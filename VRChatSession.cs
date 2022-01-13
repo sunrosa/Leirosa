@@ -2,7 +2,7 @@ namespace Leirosa
 {
     public class VRChatSession
     {
-        public string Activity {get; set;}
+        public string? Activity {get; set;} = null;
         public DateTime StartTime {get; set;}
         public DateTime UpdateTime {get; set;}
         public DateTime PauseTime {get; set;}
