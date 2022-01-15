@@ -10,6 +10,7 @@ namespace Leirosa
         public static Dictionary<string, string> Config {get; set;}
 
         private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
+        private bool _is_readied = false;
 
         public async Task MainAsync()
         {
@@ -70,6 +71,12 @@ namespace Leirosa
 
         private async Task Ready()
         {
+            if (_is_readied)
+            {
+                _log.Info("Already readied once. Returning out of Ready()...");
+                return;
+            }
+
             _log.Debug("Client ready. Initializing CommandService...");
             Commands = new Discord.Commands.CommandService();
             _log.Debug("CommandService ready. Initializing CommandHandler...");
@@ -82,6 +89,7 @@ namespace Leirosa
                 _log.Debug("Setting custom status...");
                 await Client.SetActivityAsync(new Discord.Game(Config["status"])); // Apparently you can't set custom statuses for bots, so this is the best we can do.
             }
+            _is_readied = true;
         }
 
         private Task Log(Discord.LogMessage msg)
