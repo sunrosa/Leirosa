@@ -4,11 +4,6 @@ namespace Leirosa
     {
         private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
 
-        private string FormatTimeSpan(TimeSpan timeSpan)
-        {
-            return $"{Math.Floor(timeSpan.TotalHours)}:{timeSpan.ToString(@"mm\:ss")}";
-        }
-
         [Discord.Commands.Command("flip")]
         [Discord.Commands.Summary("Flips a coin.")]
         public async Task FlipAsync()
@@ -77,7 +72,7 @@ namespace Leirosa
         [Discord.Commands.Command("vrclogin")]
         [Discord.Commands.Summary("[activity (remainder) (optional)] Login to the bot's VRChat user database.")]
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)]
-        public async Task VRCLoginAsync([Discord.Commands.Remainder]string activity = "(Unspecified)")
+        public async Task VRCLoginAsync([Discord.Commands.Remainder]string? activity = null)
         {
             _log.Debug("\"vrclogin\" was called!");
 
@@ -136,6 +131,49 @@ namespace Leirosa
             File.WriteAllText(Program.Config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
         }
 
+        [Discord.Commands.Command("vrcappend")]
+        [Discord.Commands.Summary("Append to your VRChat status.")]
+        public async Task VRCAppendAsync(string append)
+        {
+            _log.Debug("\"vrcappend\" was called!");
+
+            _log.Debug("Getting current time...");
+            var time = System.DateTime.Now;
+
+            _log.Debug("Creating local Dictionary<ulong, VRChatSession>...");
+            var data = new Dictionary<ulong, VRChatSession>();
+
+            try
+            {
+                _log.Debug("Reading VRChat users json to local dictionary...");
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config["vrchat_path"]));
+            }
+            catch
+            {
+                _log.Warn("Could not read VRChat users json. Using blank dictionary.");
+            }
+
+            if (!data.ContainsKey(Context.User.Id))
+            {
+                _log.Debug("User is not logged in. Replying and returning...");
+                await ReplyAsync("You are not logged in.");
+                return;
+            }
+
+            _log.Debug("Writing session...");
+            var session = data[Context.User.Id];
+            session.UpdateTime = time;
+            session.Activity += append;
+            session.IsUpdated = true;
+            data[Context.User.Id] = session;
+
+            _log.Debug("Writing local dictionary to file...");
+            File.WriteAllText(Program.Config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
+
+            _log.Debug("Replying...");
+            await ReplyAsync("Appended status.");
+        }
+
         [Discord.Commands.Command("vrcstatus")]
         [Discord.Commands.Summary("See who's online in VRChat.")]
         public async Task VRCStatusAsync()
@@ -181,19 +219,19 @@ namespace Leirosa
                 if (pair.Value.IsUpdated)
                 {
                     _log.Debug("Session has been updated at least once. Adding last updated detail...");
-                    last_updated = $" (updated {FormatTimeSpan(elapsed_update)} ago)";
+                    last_updated = $" (updated {ModuleHelpers.FormatTimeSpan(elapsed_update)} ago)";
                 }
                 if (pair.Value.IsPaused && pair.Value.UnpauseTime == new DateTime())
                 {
                     _log.Debug("Session is paused. Adding paused detail without ETA...");
-                    paused = $" (AFK {FormatTimeSpan(elapsed_paused)})";
+                    paused = $" (AFK {ModuleHelpers.FormatTimeSpan(elapsed_paused)})";
                 }
                 else if (pair.Value.IsPaused && pair.Value.UnpauseTime != new DateTime())
                 {
                     _log.Debug("Session is paused. Adding paused detail wtih ETA...");
-                    paused = $" (AFK {FormatTimeSpan(elapsed_paused)} / {FormatTimeSpan(pause_eta)})";
+                    paused = $" (AFK {ModuleHelpers.FormatTimeSpan(elapsed_paused)} / {ModuleHelpers.FormatTimeSpan(pause_eta)})";
                 }
-                output += $"[{FormatTimeSpan(elapsed)}] {user.Username}#{user.Discriminator}: {pair.Value.Activity}{last_updated}{paused}\n";
+                output += $"[{ModuleHelpers.FormatTimeSpan(elapsed)}] {user.Username}#{user.Discriminator}: {pair.Value.Activity ?? "(Unspecified)"}{last_updated}{paused}\n";
             }
             output += "```";
 
@@ -251,7 +289,7 @@ namespace Leirosa
             File.WriteAllText(Program.Config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
 
             _log.Debug("Replying...");
-            await ReplyAsync($"Session lasted {FormatTimeSpan(time_elapsed)}.");
+            await ReplyAsync($"Session lasted {ModuleHelpers.FormatTimeSpan(time_elapsed)}.");
         }
 
         [Discord.Commands.Command("vrcpause")]
@@ -340,8 +378,8 @@ namespace Leirosa
             File.WriteAllText(Program.Config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
 
             _log.Debug("Replying...");
-            if (has_eta) await ReplyAsync($"You were AFK for {FormatTimeSpan(elapsed_paused)} out of {FormatTimeSpan(pause_eta)}.");
-            else await ReplyAsync($"You were AFK for {FormatTimeSpan(elapsed_paused)}.");
+            if (has_eta) await ReplyAsync($"You were AFK for {ModuleHelpers.FormatTimeSpan(elapsed_paused)} out of {ModuleHelpers.FormatTimeSpan(pause_eta)}.");
+            else await ReplyAsync($"You were AFK for {ModuleHelpers.FormatTimeSpan(elapsed_paused)}.");
         }
 
         [Discord.Commands.Command("echo")]
