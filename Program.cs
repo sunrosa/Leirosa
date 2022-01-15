@@ -15,7 +15,7 @@ namespace Leirosa
         {
             {
                 var config = new NLog.Config.LoggingConfiguration();
-                var logfile = new NLog.Targets.FileTarget("logfile"){FileName="log.log"};
+                var logfile = new NLog.Targets.FileTarget("logfile"){FileName="log.log"}; // TODO: Set layout property to include method names in log entries
                 var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
 
 #if RELEASE
