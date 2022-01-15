@@ -325,6 +325,7 @@ namespace Leirosa
             session.IsPaused = true;
             session.PauseTime = time;
             if (eta != 0) session.UnpauseTime = time.AddMinutes(eta);
+            else session.UnpauseTime = new DateTime();
             data[Context.User.Id] = session;
 
             _log.Debug("Writing local dictionary to file...");
