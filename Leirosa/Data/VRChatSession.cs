@@ -1,5 +1,8 @@
 namespace Leirosa.Data
 {
+    /// <summary>
+    /// Bot-tracked VRChat session data
+    /// </summary>
     public class VRChatSession
     {
         /// <summary>

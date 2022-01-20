@@ -1,5 +1,8 @@
 namespace Leirosa.Data
 {
+    /// <summary>
+    /// Leirosa config
+    /// </summary>
     public class Config
     {
         /// <summary>
@@ -24,13 +27,13 @@ namespace Leirosa.Data
         /// The filepath that user VRChat login statuses will be written to
         /// </summary>
         /// <value></value>
-        public string VrchatPath {get; set;}
+        public string VRChatPath {get; set;}
 
         /// <summary>
         /// The Discord role ID that will be applied when logging into VRChat and removed when logging out of VRChat
         /// </summary>
         /// <value></value>
-        public ulong VrchatRoleId {get; set;}
+        public ulong VRChatRoleId {get; set;}
 
         /// <summary>
         /// Gelbooru tags that appended to every query
@@ -91,5 +94,17 @@ namespace Leirosa.Data
         /// </summary>
         /// <value></value>
         public string DatetimeFormat {get; set;}
+
+        /// <summary>
+        /// Whether or not to count all command invokations and output them into a json file
+        /// </summary>
+        /// <value></value>
+        public bool TrackInvokedCommands {get; set;}
+
+        /// <summary>
+        /// Path to track command invokations to
+        /// </summary>
+        /// <value></value>
+        public string CommandTrackerPath {get; set;}
     }
 }

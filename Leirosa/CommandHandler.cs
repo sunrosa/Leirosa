@@ -42,10 +42,10 @@ namespace Leirosa
             if (message == null) return;
 
             // Create a number to track where the prefix ends and the command begins. If you set it to 0, the prefix will be included in the call.
-            int argPos = 1;
+            var argPos = Program.Config.Prefix.Length;
 
             // Determine if the message is a command based on the prefix and make sure no bots trigger commands
-            if (!message.Content.StartsWith(Program.Config.Prefix) || message.Content.Length == 1 || message.Content[1] == '.' || message.Author.IsBot)
+            if (!message.Content.StartsWith(Program.Config.Prefix) || message.Content.Length == 1 || message.Content[1] == Convert.ToChar(Program.Config.Prefix) || message.Author.IsBot)
             {
                 _log.Debug("Message was not bot command. Exiting command sequence...");
                 return;
@@ -62,6 +62,8 @@ namespace Leirosa
             {
                 _log.Debug($"Context created. Command was \"{context.Message.Content}\" sent by {context.User.Username} ({context.User.Id}) in channel {context.Channel.Id} (DM).");
             }
+
+            if (Program.Config.TrackInvokedCommands) Program.CommandTracker.TrackCommand(context, argPos);
 
             // Execute the command with the command context we just
             // created, along with the service provider for precondition checks.
