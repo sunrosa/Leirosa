@@ -428,5 +428,22 @@ namespace Leirosa.Modules
                 await ReplyAsync("Insufficient permissions.");
             }
         }
+
+        [Discord.Commands.Command("topcmd")]
+        [Discord.Commands.Summary("Lists out most used commands.")]
+        public async Task TopCmdAsync()
+        {
+            _log.Debug("\"topcmd\" was called!");
+
+            if (Program.Config.TrackInvokedCommands)
+            {
+                await ReplyAsync($"```{Program.CommandTracker.Invokations.Where(c => Program.Commands.Commands.Select(x => x.Name).Contains(c.Key)).OrderByDescending(c => c.Value).Select(c => $"[{c.Value}] {c.Key}").Aggregate((a, b) => a + "\n" + b)}```"); // C# baby
+            }
+            else
+            {
+                _log.Debug($"{nameof(Program.Config.TrackInvokedCommands)} is not enabled. Returning...");
+                await ReplyAsync("Command tracking is disabled in the bot config.");
+            }
+        }
     }
 }
