@@ -23,8 +23,15 @@ namespace Leirosa
 
             Filepath = filepath;
 
+            try
+            {
             _log.Debug($"Deserializing json to {nameof(Invokations)}...");
             Invokations = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, ulong>>(File.ReadAllText(Filepath));
+            }
+            catch (FileNotFoundException)
+            {
+                Invokations = new Dictionary<string, ulong>();
+            }
 
             _save_timer = new System.Timers.Timer(saveInterval);
 
