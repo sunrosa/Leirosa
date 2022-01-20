@@ -45,7 +45,7 @@ namespace Leirosa
             int argPos = 1;
 
             // Determine if the message is a command based on the prefix and make sure no bots trigger commands
-            if (!message.Content.StartsWith(Program.Config["prefix"]) || message.Content.Length == 1 || message.Content[1] == '.' || message.Author.IsBot)
+            if (!message.Content.StartsWith(Program.Config.Prefix) || message.Content.Length == 1 || message.Content[1] == '.' || message.Author.IsBot)
             {
                 _log.Debug("Message was not bot command. Exiting command sequence...");
                 return;

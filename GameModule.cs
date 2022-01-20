@@ -85,7 +85,7 @@ namespace Leirosa
             try
             {
                 _log.Debug("Reading VRChat users json to local dictionary...");
-                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config["vrchat_path"]));
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
             }
             catch
             {
@@ -110,15 +110,15 @@ namespace Leirosa
                 data[Context.User.Id] = new VRChatSession(){Activity = activity, StartTime = time};
 
                 _log.Debug("Replying...");
-                await ReplyAsync($"Logging in at {time.ToString(Program.Config["datetime_format"])}...");
+                await ReplyAsync($"Logging in at {time.ToString(Program.Config.DatetimeFormat)}...");
             }
 
-            if (Program.Config.ContainsKey("vrchat_role_id"))
+            if (Program.Config.VrchatRoleId != null && Program.Config.VrchatRoleId != 0)
             {
                 try
                 {
                     _log.Debug("Giving role...");
-                    await (Context.User as Discord.WebSocket.SocketGuildUser).AddRoleAsync(Convert.ToUInt64(Program.Config["vrchat_role_id"]));
+                    await (Context.User as Discord.WebSocket.SocketGuildUser).AddRoleAsync(Program.Config.VrchatRoleId);
                 }
                 catch
                 {
@@ -128,7 +128,7 @@ namespace Leirosa
             }
 
             _log.Debug("Writing local dictionary to file...");
-            File.WriteAllText(Program.Config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
+            File.WriteAllText(Program.Config.VrchatPath, Newtonsoft.Json.JsonConvert.SerializeObject(data));
         }
 
         [Discord.Commands.Command("vrcappend")]
@@ -146,7 +146,7 @@ namespace Leirosa
             try
             {
                 _log.Debug("Reading VRChat users json to local dictionary...");
-                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config["vrchat_path"]));
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
             }
             catch
             {
@@ -168,7 +168,7 @@ namespace Leirosa
             data[Context.User.Id] = session;
 
             _log.Debug("Writing local dictionary to file...");
-            File.WriteAllText(Program.Config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
+            File.WriteAllText(Program.Config.VrchatPath, Newtonsoft.Json.JsonConvert.SerializeObject(data));
 
             _log.Debug("Replying...");
             await ReplyAsync("Appended status.");
@@ -189,7 +189,7 @@ namespace Leirosa
             try
             {
                 _log.Debug("Reading VRChat users json to local dictionary...");
-                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config["vrchat_path"]));
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
             }
             catch
             {
@@ -252,7 +252,7 @@ namespace Leirosa
             try
             {
                 _log.Debug("Reading VRChat users json to local dictionary...");
-                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config["vrchat_path"]));
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
             }
             catch
             {
@@ -271,12 +271,12 @@ namespace Leirosa
             _log.Debug("Removing user from local dictionary...");
             data.Remove(Context.User.Id);
 
-            if (Program.Config.ContainsKey("vrchat_role_id"))
+            if (Program.Config.VrchatRoleId != null && Program.Config.VrchatRoleId != 0)
             {
                 try
                 {
                     _log.Debug("Removing role...");
-                    await (Context.User as Discord.WebSocket.SocketGuildUser).RemoveRoleAsync(Convert.ToUInt64(Program.Config["vrchat_role_id"]));
+                    await (Context.User as Discord.WebSocket.SocketGuildUser).RemoveRoleAsync(Program.Config.VrchatRoleId);
                 }
                 catch
                 {
@@ -286,7 +286,7 @@ namespace Leirosa
             }
 
             _log.Debug("Writing local dictionary to file...");
-            File.WriteAllText(Program.Config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
+            File.WriteAllText(Program.Config.VrchatPath, Newtonsoft.Json.JsonConvert.SerializeObject(data));
 
             _log.Debug("Replying...");
             await ReplyAsync($"Session lasted {ModuleHelpers.FormatTimeSpan(time_elapsed)}.");
@@ -307,7 +307,7 @@ namespace Leirosa
             try
             {
                 _log.Debug("Reading VRChat users json to local dictionary...");
-                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config["vrchat_path"]));
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
             }
             catch
             {
@@ -329,7 +329,7 @@ namespace Leirosa
             data[Context.User.Id] = session;
 
             _log.Debug("Writing local dictionary to file...");
-            File.WriteAllText(Program.Config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
+            File.WriteAllText(Program.Config.VrchatPath, Newtonsoft.Json.JsonConvert.SerializeObject(data));
 
             _log.Debug("Replying...");
             if (eta == 0) await ReplyAsync("Going AFK...");
@@ -352,7 +352,7 @@ namespace Leirosa
             try
             {
                 _log.Debug("Reading VRChat users json to local dictionary...");
-                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config["vrchat_path"]));
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
             }
             catch
             {
@@ -376,7 +376,7 @@ namespace Leirosa
             data[Context.User.Id] = session;
 
             _log.Debug("Writing local dictionary to file...");
-            File.WriteAllText(Program.Config["vrchat_path"], Newtonsoft.Json.JsonConvert.SerializeObject(data));
+            File.WriteAllText(Program.Config.VrchatPath, Newtonsoft.Json.JsonConvert.SerializeObject(data));
 
             _log.Debug("Replying...");
             if (has_eta) await ReplyAsync($"You were AFK for {ModuleHelpers.FormatTimeSpan(elapsed_paused)} out of {ModuleHelpers.FormatTimeSpan(pause_eta)}.");

@@ -7,7 +7,7 @@ namespace Leirosa
 
         public static Discord.WebSocket.DiscordSocketClient Client {get; set;}
         public static Discord.Commands.CommandService Commands {get; set;}
-        public static Dictionary<string, string> Config {get; set;}
+        public static Config Config {get; set;}
 
         private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
         private bool _is_readied = false;
@@ -50,12 +50,10 @@ namespace Leirosa
             Client.Log += Log;
 
             _log.Debug("Parsing workspace config...");
-            Config = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText("config.json"));
-
-            var token = Config["token"];
+            Config = Newtonsoft.Json.JsonConvert.DeserializeObject<Config>(File.ReadAllText("config.json"));
 
             _log.Debug("Logging in...");
-            await Client.LoginAsync(Discord.TokenType.Bot, token);
+            await Client.LoginAsync(Discord.TokenType.Bot, Config.Token);
             await Client.StartAsync();
 
             Client.Ready += Ready; // Call Ready() when the client is ready.
@@ -84,10 +82,10 @@ namespace Leirosa
             _log.Debug("Installing commands...");
             await command_handler.InstallCommandsAsync();
 
-            if (bool.Parse(Config["use_custom_status"]))
+            if (Config.UseCustomStatus)
             {
                 _log.Debug("Setting custom status...");
-                await Client.SetActivityAsync(new Discord.Game(Config["status"])); // Apparently you can't set custom statuses for bots, so this is the best we can do.
+                await Client.SetActivityAsync(new Discord.Game(Config.Status)); // Apparently you can't set custom statuses for bots, so this is the best we can do.
             }
             _is_readied = true;
         }

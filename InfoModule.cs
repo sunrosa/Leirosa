@@ -38,7 +38,7 @@ namespace Leirosa
         public async Task SourceAsync()
         {
             _log.Debug("\"source\" was called!");
-            await ReplyAsync(Program.Config["source"]);
+            await ReplyAsync(Program.Config.SourceURL);
         }
 
         [Discord.Commands.Command("invite")]
@@ -46,7 +46,7 @@ namespace Leirosa
         public async Task InviteAsync()
         {
             _log.Debug("\"invite\" was called!");
-            await ReplyAsync(Program.Config["invite"]);
+            await ReplyAsync(Program.Config.InviteURL);
         }
 
         [Discord.Commands.Command("userinfo")]
@@ -232,9 +232,9 @@ namespace Leirosa
         {
             _log.Debug("\"suggest\" was called!");
 
-            using (var writer = File.AppendText(Program.Config["suggestions_path"]))
+            using (var writer = File.AppendText(Program.Config.SuggestionsPath))
             {
-                writer.WriteLine($"{DateTime.Now.ToString(Program.Config["datetime_format"])} - {Context.User.Username} [{Context.User.Id}] - {suggestion}");
+                writer.WriteLine($"{DateTime.Now.ToString(Program.Config.DatetimeFormat)} - {Context.User.Username} [{Context.User.Id}] - {suggestion}");
             }
 
             await ReplyAsync("Thank you for your suggestion!");
@@ -246,9 +246,9 @@ namespace Leirosa
         {
             _log.Debug("\"report\" was called!");
 
-            using (var writer = File.AppendText(Program.Config["reports_path"]))
+            using (var writer = File.AppendText(Program.Config.ReportsPath))
             {
-                writer.WriteLine($"{DateTime.Now.ToString(Program.Config["datetime_format"])} - {Context.User.Username} [{Context.User.Id}] - {report}");
+                writer.WriteLine($"{DateTime.Now.ToString(Program.Config.DatetimeFormat)} - {Context.User.Username} [{Context.User.Id}] - {report}");
             }
 
             await ReplyAsync("Thank you for your error report!");
@@ -296,7 +296,7 @@ namespace Leirosa
         {
             _log.Debug("\"shutdown\" was called!");
 
-            if (Context.User.Id == Convert.ToUInt64(Program.Config["developer_id"]))
+            if (Program.Config.DeveloperIds.Contains(Context.User.Id))
             {
                 _log.Info("Calling Program.Shutdown()...");
                 await ReplyAsync("Goodbye.");
@@ -354,7 +354,7 @@ namespace Leirosa
             }
 
             _log.Debug("Replying...");
-            await ReplyAsync($"Running {Program.Config["name"]}{(commit_sha != "" ? $" {commit_sha[0..7]}" : "")} on .NET {Environment.Version} on {System.Net.Dns.GetHostName()} with build configuration {build_configuration}.");
+            await ReplyAsync($"Running {Program.Config.BotName}{(commit_sha != "" ? $" {commit_sha[0..7]}" : "")} on .NET {Environment.Version} on {System.Net.Dns.GetHostName()} with build configuration {build_configuration}.");
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Leirosa
 
             var discord_color = new Discord.Color(0, 0, 0);
 
-            if (bool.Parse(Program.Config["embed_color_from_user_avatar"]))
+            if (Program.Config.EmbedColorFromUserAvatar)
             {
                 _log.Debug("Config opted to calculate embed color via user avatar.");
 
