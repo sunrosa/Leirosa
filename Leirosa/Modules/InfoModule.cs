@@ -1,4 +1,4 @@
-namespace Leirosa
+namespace Leirosa.Modules
 {
     public class InfoModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCommandContext>
     {

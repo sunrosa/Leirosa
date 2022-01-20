@@ -1,4 +1,4 @@
-namespace Leirosa
+namespace Leirosa.Data
 {
     public class Config
     {

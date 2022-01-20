@@ -1,5 +1,5 @@
 // Module specific to the guild Rabbit Island (485003271468089365)
-namespace Leirosa
+namespace Leirosa.Modules
 {
     public class RabbitModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCommandContext>
     {

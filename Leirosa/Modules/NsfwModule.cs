@@ -1,4 +1,4 @@
-namespace Leirosa
+namespace Leirosa.Modules
 {
     public class NsfwModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCommandContext>
     {

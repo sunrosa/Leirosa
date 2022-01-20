@@ -7,7 +7,7 @@ namespace Leirosa
 
         public static Discord.WebSocket.DiscordSocketClient Client {get; set;}
         public static Discord.Commands.CommandService Commands {get; set;}
-        public static Config Config {get; set;}
+        public static Data.Config Config {get; set;}
 
         private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
         private bool _is_readied = false;
@@ -50,7 +50,7 @@ namespace Leirosa
             Client.Log += Log;
 
             _log.Debug("Parsing workspace config...");
-            Config = Newtonsoft.Json.JsonConvert.DeserializeObject<Config>(File.ReadAllText("config.json"));
+            Config = Newtonsoft.Json.JsonConvert.DeserializeObject<Data.Config>(File.ReadAllText("config.json"));
 
             _log.Debug("Logging in...");
             await Client.LoginAsync(Discord.TokenType.Bot, Config.Token);

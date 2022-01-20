@@ -1,4 +1,4 @@
-namespace Leirosa
+namespace Leirosa.Modules
 {
     public class GameModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCommandContext>
     {
@@ -80,12 +80,12 @@ namespace Leirosa
             var time = System.DateTime.Now;
 
             _log.Debug("Creating local Dictionary<ulong, VRChatSession>...");
-            var data = new Dictionary<ulong, VRChatSession>();
+            var data = new Dictionary<ulong, Data.VRChatSession>();
 
             try
             {
                 _log.Debug("Reading VRChat users json to local dictionary...");
-                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, Data.VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
             }
             catch
             {
@@ -107,7 +107,7 @@ namespace Leirosa
             else
             {
                 _log.Debug("Writing new session data to local dictionary...");
-                data[Context.User.Id] = new VRChatSession(){Activity = activity, StartTime = time};
+                data[Context.User.Id] = new Data.VRChatSession(){Activity = activity, StartTime = time};
 
                 _log.Debug("Replying...");
                 await ReplyAsync($"Logging in at {time.ToString(Program.Config.DatetimeFormat)}...");
@@ -141,12 +141,12 @@ namespace Leirosa
             var time = System.DateTime.Now;
 
             _log.Debug("Creating local Dictionary<ulong, VRChatSession>...");
-            var data = new Dictionary<ulong, VRChatSession>();
+            var data = new Dictionary<ulong, Data.VRChatSession>();
 
             try
             {
                 _log.Debug("Reading VRChat users json to local dictionary...");
-                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, Data.VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
             }
             catch
             {
@@ -184,12 +184,12 @@ namespace Leirosa
             var time = System.DateTime.Now;
 
             _log.Debug("Creating local Dictionary<ulong, VRChatSession>...");
-            var data = new Dictionary<ulong, VRChatSession>();
+            var data = new Dictionary<ulong, Data.VRChatSession>();
 
             try
             {
                 _log.Debug("Reading VRChat users json to local dictionary...");
-                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, Data.VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
             }
             catch
             {
@@ -247,12 +247,12 @@ namespace Leirosa
             _log.Debug("\"vrclogout\" was called!");
 
             _log.Debug("Creating local Dictionary<ulong, VRChatSession>...");
-            var data = new Dictionary<ulong, VRChatSession>();
+            var data = new Dictionary<ulong, Data.VRChatSession>();
 
             try
             {
                 _log.Debug("Reading VRChat users json to local dictionary...");
-                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, Data.VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
             }
             catch
             {
@@ -302,12 +302,12 @@ namespace Leirosa
             var time = System.DateTime.Now;
 
             _log.Debug("Creating local Dictionary<ulong, VRChatSession>...");
-            var data = new Dictionary<ulong, VRChatSession>();
+            var data = new Dictionary<ulong, Data.VRChatSession>();
 
             try
             {
                 _log.Debug("Reading VRChat users json to local dictionary...");
-                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, Data.VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
             }
             catch
             {
@@ -347,12 +347,12 @@ namespace Leirosa
             var time = System.DateTime.Now;
 
             _log.Debug("Creating local Dictionary<ulong, VRChatSession>...");
-            var data = new Dictionary<ulong, VRChatSession>();
+            var data = new Dictionary<ulong, Data.VRChatSession>();
 
             try
             {
                 _log.Debug("Reading VRChat users json to local dictionary...");
-                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, Data.VRChatSession>>(File.ReadAllText(Program.Config.VrchatPath));
             }
             catch
             {
