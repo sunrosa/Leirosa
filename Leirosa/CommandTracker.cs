@@ -46,7 +46,7 @@ namespace Leirosa
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void Save(object? sender, EventArgs e)
+        public void Save(object? sender = null, EventArgs? e = null)
         {
             _log.Info($"Serializing {nameof(Invokations)} and saving to {Filepath}...");
             File.WriteAllText(Filepath, Newtonsoft.Json.JsonConvert.SerializeObject(Invokations));

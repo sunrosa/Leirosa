@@ -8,7 +8,7 @@ namespace Leirosa
         public static Discord.WebSocket.DiscordSocketClient Client {get; set;}
         public static Discord.Commands.CommandService Commands {get; set;}
         public static Data.Config Config {get; set;}
-        public static CommandTracker CommandTracker {get; set;}
+        public static CommandTracker? CommandTracker {get; set;}
 
         private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
         private bool _is_readied = false;
@@ -59,7 +59,7 @@ namespace Leirosa
 
             Client.Ready += Ready; // Call Ready() when the client is ready.
 
-            Program.CommandTracker = new CommandTracker(Config.CommandTrackerPath);
+            if (Config.TrackInvokedCommands) Program.CommandTracker = new CommandTracker(Config.CommandTrackerPath);
 
             await Task.Delay(-1); // Block the thread to prevent the program from closing (infinite wait)
         }

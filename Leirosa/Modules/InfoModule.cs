@@ -350,7 +350,7 @@ namespace Leirosa.Modules
             }
             else
             {
-                _log.Debug("Caller is not listed as developer. Doing nothing...");
+                _log.Debug("Caller is not listed as a developer. Doing nothing...");
                 await ReplyAsync("Insufficient permissions.");
             }
         }
@@ -401,6 +401,32 @@ namespace Leirosa.Modules
 
             _log.Debug("Replying...");
             await ReplyAsync($"Running {Program.Config.BotName}{(commit_sha != "" ? $" {commit_sha[0..7]}" : "")} on .NET {Environment.Version} on {System.Net.Dns.GetHostName()} with build configuration {build_configuration}.");
+        }
+
+        [Discord.Commands.Command("save")]
+        [Discord.Commands.Summary("(Developer only) Saves memory objects to their destination files.")]
+        public async Task SaveAsync()
+        {
+            _log.Debug("\"save\" was called!");
+
+            if (Program.Config.DeveloperIds.Contains(Context.User.Id))
+            {
+                try
+                {
+                    Program.CommandTracker.Save();
+                }
+                catch (NullReferenceException)
+                {
+                    _log.Warn("Bot is not configured to track command invokations.");
+                }
+
+                await ReplyAsync("Everything has been saved.");
+            }
+            else
+            {
+                _log.Debug("Caller is not listed as a developer. Doing nothing...");
+                await ReplyAsync("Insufficient permissions.");
+            }
         }
     }
 }
