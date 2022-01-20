@@ -19,8 +19,8 @@ namespace Leirosa.Modules
         }
 
         [Discord.Commands.Command("roll")]
-        [Discord.Commands.Summary("[sides (optional)] Rolls dice.")]
-        public async Task RollAsync(int sides = 6)
+        [Discord.Commands.Summary("Rolls dice.")]
+        public async Task RollAsync([Discord.Commands.Summary("Number of sides that the die to be rolled has")]int sides = 6)
         {
             _log.Debug("\"roll\" was called!");
 
@@ -31,8 +31,8 @@ namespace Leirosa.Modules
         }
 
         [Discord.Commands.Command("draw")]
-        [Discord.Commands.Summary("[count (optional)] Draws cards.")]
-        public async Task DrawAsync(int count = 1)
+        [Discord.Commands.Summary("Draws cards.")]
+        public async Task DrawAsync([Discord.Commands.Summary("Number of cards to draw")]int count = 1)
         {
             _log.Debug("\"draw\" was called!");
 
@@ -70,9 +70,10 @@ namespace Leirosa.Modules
         // These VRC commands, and any other long-term stateful (remembers shit between calls) commands, should be ported over to using a database, as opposed to JSON.
 
         [Discord.Commands.Command("vrclogin")]
-        [Discord.Commands.Summary("[activity (remainder) (optional)] Login to the bot's VRChat user database.")]
+        [Discord.Commands.Alias("vrcl")]
+        [Discord.Commands.Summary("Login to the bot's VRChat user database.")]
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)]
-        public async Task VRCLoginAsync([Discord.Commands.Remainder]string? activity = null)
+        public async Task VRCLoginAsync([Discord.Commands.Summary("User status")][Discord.Commands.Remainder]string? activity = null)
         {
             _log.Debug("\"vrclogin\" was called!");
 
@@ -132,8 +133,9 @@ namespace Leirosa.Modules
         }
 
         [Discord.Commands.Command("vrcappend")]
-        [Discord.Commands.Summary("Append to your VRChat status.")]
-        public async Task VRCAppendAsync(string append)
+        [Discord.Commands.Alias("vrca")]
+        [Discord.Commands.Summary("Appends text to your VRChat status.")]
+        public async Task VRCAppendAsync([Discord.Commands.Summary("Status text to append")]string append)
         {
             _log.Debug("\"vrcappend\" was called!");
 
@@ -175,6 +177,7 @@ namespace Leirosa.Modules
         }
 
         [Discord.Commands.Command("vrcstatus")]
+        [Discord.Commands.Alias("vrcs")]
         [Discord.Commands.Summary("See who's online in VRChat.")]
         public async Task VRCStatusAsync()
         {
@@ -240,6 +243,7 @@ namespace Leirosa.Modules
         }
 
         [Discord.Commands.Command("vrclogout")]
+        [Discord.Commands.Alias("vrco")]
         [Discord.Commands.Summary("Log out of the bot's VRChat database.")]
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)]
         public async Task VRCLogoutAsync()
@@ -293,8 +297,9 @@ namespace Leirosa.Modules
         }
 
         [Discord.Commands.Command("vrcpause")]
-        [Discord.Commands.Summary("[minutes (optional)] Set yourself as AFK in VRChat. You may specify an ETA for your return.")]
-        public async Task VRCPauseAsync(uint eta = 0)
+        [Discord.Commands.Alias("vrcp")]
+        [Discord.Commands.Summary("Set yourself as AFK in VRChat. You may specify an ETA for your return.")]
+        public async Task VRCPauseAsync([Discord.Commands.Summary("Minutes until your estimated return")][Discord.Commands.Name("ETA")]uint eta = 0)
         {
             _log.Debug("\"vrcpause\" was called!");
 
@@ -338,6 +343,7 @@ namespace Leirosa.Modules
         }
 
         [Discord.Commands.Command("vrcunpause")]
+        [Discord.Commands.Alias("vrcu")]
         [Discord.Commands.Summary("Return from AFK in VRChat.")]
         public async Task VRCUnpauseAsync()
         {
@@ -384,8 +390,8 @@ namespace Leirosa.Modules
         }
 
         [Discord.Commands.Command("echo")]
-        [Discord.Commands.Summary("[text (remainder)] Echoes what you say.")]
-        public async Task EchoAsync([Discord.Commands.Remainder]string text)
+        [Discord.Commands.Summary("Echoes what you say.")]
+        public async Task EchoAsync([Discord.Commands.Summary("Text to be echoed")][Discord.Commands.Remainder]string text)
         {
             _log.Debug("\"echo\" was called!");
 

@@ -5,10 +5,10 @@ namespace Leirosa.Modules
         private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
 
         [Discord.Commands.Command("gelbooru")]
-        [Discord.Commands.Summary("[tags (remainder) (optional)] Gets a random file from Gelbooru.")]
-        [Discord.Commands.RequireNsfw(Group = "Private")] // In an NSFW channel OR DM
-        [Discord.Commands.RequireContext(Discord.Commands.ContextType.DM, Group = "Private")]
-        public async Task GelbooruAsync([Discord.Commands.Remainder]string tags_str = "")
+        [Discord.Commands.Summary("Gets a random file from Gelbooru.")]
+        [Discord.Commands.RequireNsfw(Group = "Private", ErrorMessage = "Channel must be NSFW or DM.")] // In an NSFW channel OR DM
+        [Discord.Commands.RequireContext(Discord.Commands.ContextType.DM, Group = "Private", ErrorMessage = "Channel must be NSFW or DM.")]
+        public async Task GelbooruAsync([Discord.Commands.Summary("Tags to be queried")][Discord.Commands.Remainder]string tags_str = "")
         {
             try // Bad practice to wrap everything in a try-catch
             {
@@ -37,10 +37,10 @@ namespace Leirosa.Modules
         }
 
         [Discord.Commands.Command("mgelbooru")]
-        [Discord.Commands.Summary("[tags (remainder) (optional)] Gets 5 random files from Gelbooru.")]
-        [Discord.Commands.RequireNsfw(Group = "Private")] // In an NSFW channel OR DM
-        [Discord.Commands.RequireContext(Discord.Commands.ContextType.DM, Group = "Private")]
-        public async Task MGelbooruAsync([Discord.Commands.Remainder]string tags_str = "")
+        [Discord.Commands.Summary("Gets 5 random files from Gelbooru.")]
+        [Discord.Commands.RequireNsfw(Group = "Private", ErrorMessage = "Channel must be NSFW or DM.")] // In an NSFW channel OR DM
+        [Discord.Commands.RequireContext(Discord.Commands.ContextType.DM, Group = "Private", ErrorMessage = "Channel must be NSFW or DM.")]
+        public async Task MGelbooruAsync([Discord.Commands.Summary("Tags to be queried")][Discord.Commands.Remainder]string tags_str = "")
         {
             try
             {
@@ -78,10 +78,10 @@ namespace Leirosa.Modules
         }
 
         [Discord.Commands.Command("xgelbooru")]
-        [Discord.Commands.Summary("[count (<25), tags (remainder) (optional)]")]
-        [Discord.Commands.RequireNsfw(Group = "Private")] // In an NSFW channel OR DM
-        [Discord.Commands.RequireContext(Discord.Commands.ContextType.DM, Group = "Private")]
-        public async Task XGelbooruAsync(uint count, [Discord.Commands.Remainder]string tags_str = "")
+        [Discord.Commands.Summary("Requests 1-25 random files from Gelbooru.")]
+        [Discord.Commands.RequireNsfw(Group = "Private", ErrorMessage = "Channel must be NSFW or DM.")] // In an NSFW channel OR DM
+        [Discord.Commands.RequireContext(Discord.Commands.ContextType.DM, Group = "Private", ErrorMessage = "Channel must be NSFW or DM.")]
+        public async Task XGelbooruAsync([Discord.Commands.Summary("(<25) Number of posts to request")]uint count, [Discord.Commands.Summary("Tags to be queried")][Discord.Commands.Remainder]string tags_str = "")
         {
             try
             {

@@ -87,7 +87,7 @@ namespace Leirosa
                         break;
                     default:
                         _log.Debug("No help text was available for the error at hand. Sending error itself as a message...");
-                        await context.Channel.SendMessageAsync(result.ToString());
+                        await context.Channel.SendMessageAsync($"{result.Error.GetType()}: {result.ErrorReason}");
                         break;
                 }
             }

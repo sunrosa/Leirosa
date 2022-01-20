@@ -6,31 +6,77 @@ namespace Leirosa.Modules
 
         [Discord.Commands.Command("help")]
         [Discord.Commands.Summary("Provides command info.")]
-        public async Task HelpAsync()
+        public async Task HelpAsync([Discord.Commands.Summary("The command to print help text for")]string command = "")
         {
             _log.Debug("\"help\" was called!");
 
-            // One in a hundred chance the command replies with "help!" and then does nothing else
-            var random = new Random();
-            if (random.Next(0, 101) == 0)
+            if (command == "")
             {
-                _log.Debug("Random check passed! Replying only with \"help!\"");
-                await ReplyAsync("help!");
-                return;
-            }
+                _log.Debug("Command parameter is empty. Supplying general help...");
 
-            _log.Debug("Obtaining list of all commands...");
-            var commands = Program.Commands.Commands.ToList();
-            _log.Debug("Formatting as help text...");
-            var output = "```\n";
-            foreach (var command in commands)
+                // One in a hundred chance the command replies with "help!" and then does nothing else
+                var random = new Random();
+                if (random.Next(0, 101) == 0)
+                {
+                    _log.Debug("Random check passed! Replying only with \"help!\"");
+                    await ReplyAsync("help!");
+                    return;
+                }
+
+                _log.Debug("Obtaining list of all commands...");
+                var commands = Program.Commands.Commands.ToList();
+                _log.Debug("Formatting as help text...");
+                var output = "```\n";
+                foreach (var c in commands)
+                {
+                    var parameters = new List<string>();
+                    foreach (var parameter in c.Parameters)
+                    {
+                        parameters.Add($"{parameter.Name}{(parameter.IsOptional ? " (optional)" : "")}{(parameter.IsRemainder ? " (remainder)" : "")}");
+                    }
+
+                    var parameters_str = "";
+                    try
+                    {
+                        parameters_str = parameters.Aggregate((a, b) => a + ", " + b);
+                    }
+                    catch (InvalidOperationException)
+                    {}
+
+                    output += $"({c.Aliases.Aggregate((a, b) => a + ", " + b)}) ({parameters_str}) [{c.Module.Name.Remove(c.Module.Name.Length - 6)}]: {c.Summary}\n";
+                }
+                output += "\n```";
+
+                _log.Debug("Replying...");
+                await ReplyAsync(output);
+            }
+            else
             {
-                output += $"{command.Name} [{command.Module.Name.Remove(command.Module.Name.Length - 6)}]: {command.Summary}\n";
-            }
-            output += "\n```";
+                _log.Debug($"Help was requested for {command}.");
 
-            _log.Debug("Replying...");
-            await ReplyAsync(output);
+                var commandInfo = Program.Commands.Commands.First(c => c.Name == command || c.Aliases.Contains(command));
+                if (commandInfo == null)
+                {
+                    await ReplyAsync("Unknown command.");
+                    return;
+                }
+
+                string? parameter_output = null;
+                foreach (var parameter in commandInfo.Parameters)
+                {
+                    parameter_output += $"{parameter.Name}{(parameter.Summary != "" && parameter.Summary != null ? $": {parameter.Summary}" : "")}{(parameter.IsOptional ? " (optional)" : "")}{(parameter.IsRemainder ? " (remainder)" : "")}\n";
+                }
+
+                var embed = new Discord.EmbedBuilder()
+                    .WithTitle(commandInfo.Name)
+                    .AddField("Summary", commandInfo.Summary, true)
+                    .AddField("Aliases", commandInfo.Aliases.Aggregate((a, b) => a + ", " + b), true)
+                    .AddField("Module", commandInfo.Module.Name.Remove(commandInfo.Module.Name.Length - 6), true)
+                    .AddField("Preconditions", commandInfo.Preconditions.Count != 0 ? commandInfo.Preconditions.Select(p => $"[{p.GetType().Name}, {p.Group ?? "None"}]").Aggregate((a, b) => a + ", " + b) : "None") /* TODO: Attribute arguments should be included here.*/
+                    .AddField("Parameters", parameter_output ?? "None", false);
+
+                await ReplyAsync(embed: embed.Build());
+            }
         }
 
         [Discord.Commands.Command("source")]
@@ -51,9 +97,9 @@ namespace Leirosa.Modules
 
         [Discord.Commands.Command("userinfo")]
         [Discord.Commands.Alias("whois")]
-        [Discord.Commands.Summary("[user (optional)] Prints data about you or somebody else.")]
+        [Discord.Commands.Summary("Prints data about you or somebody else.")]
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)] // Could be made workable in DM.
-        public async Task WhoisAsync(Discord.WebSocket.SocketGuildUser user = null) // May fail when pinging other users.
+        public async Task WhoisAsync([Discord.Commands.Summary("Target user")]Discord.WebSocket.SocketGuildUser user = null)
         {
             _log.Debug("\"whois\" was called!");
 
@@ -158,9 +204,9 @@ namespace Leirosa.Modules
         }
 
         [Discord.Commands.Command("permissions")]
-        [Discord.Commands.Summary("[user (optional)] Prints a user's guild permissions.")]
+        [Discord.Commands.Summary("Prints a user's guild permissions.")]
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)]
-        public async Task PermissionsAsync(Discord.WebSocket.SocketGuildUser user = null)
+        public async Task PermissionsAsync([Discord.Commands.Summary("Target user")]Discord.WebSocket.SocketGuildUser user = null)
         {
             _log.Debug("\"permissions\" was called!");
 
@@ -184,9 +230,9 @@ namespace Leirosa.Modules
         }
 
         [Discord.Commands.Command("cpermissions")]
-        [Discord.Commands.Summary("[user (optional), channel (optional)] Prints a user's channel permissions.")]
+        [Discord.Commands.Summary("Prints a user's channel permissions.")]
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)]
-        public async Task CPermissionsAsync(Discord.WebSocket.SocketGuildUser user = null, Discord.WebSocket.SocketGuildChannel channel = null)
+        public async Task CPermissionsAsync([Discord.Commands.Summary("Target user")]Discord.WebSocket.SocketGuildUser user = null, [Discord.Commands.Summary("Target channel")]Discord.WebSocket.SocketGuildChannel channel = null)
         {
             _log.Debug("\"cpermissions\" was called!");
 
@@ -227,8 +273,8 @@ namespace Leirosa.Modules
         }
 
         [Discord.Commands.Command("suggest")]
-        [Discord.Commands.Summary("[suggestion (remainder)] Where you can suggest features.")]
-        public async Task SuggestAsync([Discord.Commands.Remainder]string suggestion)
+        [Discord.Commands.Summary("Suggests features.")]
+        public async Task SuggestAsync([Discord.Commands.Summary("Suggestion to be made")][Discord.Commands.Remainder]string suggestion)
         {
             _log.Debug("\"suggest\" was called!");
 
@@ -241,8 +287,8 @@ namespace Leirosa.Modules
         }
 
         [Discord.Commands.Command("report")]
-        [Discord.Commands.Summary("[report (remainder)] Where you can report bugs.")]
-        public async Task ReportAsync([Discord.Commands.Remainder]string report)
+        [Discord.Commands.Summary("Reports bugs.")]
+        public async Task ReportAsync([Discord.Commands.Summary("Report to be made")][Discord.Commands.Remainder]string report)
         {
             _log.Debug("\"report\" was called!");
 
