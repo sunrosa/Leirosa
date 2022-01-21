@@ -8,26 +8,26 @@ namespace Leirosa.Modules
         [Discord.Commands.Summary("Gets a random file from Gelbooru.")]
         [Discord.Commands.RequireNsfw(Group = "Private", ErrorMessage = "Channel must be NSFW or DM.")] // In an NSFW channel OR DM
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.DM, Group = "Private", ErrorMessage = "Channel must be NSFW or DM.")]
-        public async Task GelbooruAsync([Discord.Commands.Summary("Tags to be queried")][Discord.Commands.Remainder]string tags_str = "")
+        public async Task GelbooruAsync([Discord.Commands.Summary("Tags to be queried")][Discord.Commands.Name("tags")][Discord.Commands.Remainder]string tagsStr = "")
         {
             try // Bad practice to wrap everything in a try-catch
             {
                 _log.Debug("\"gelbooru\" was called!");
 
                 _log.Debug("Obtaining default tags...");
-                var default_tags = Program.Config.DefaultGelbooruTags;
+                var defaultTags = Program.Config.DefaultGelbooruTags;
 
                 _log.Debug("Formatting requested tags...");
-                tags_str = tags_str.Replace(" ", "+"); // Format tags for API request
+                tagsStr = tagsStr.Replace(" ", "+"); // Format tags for API request
 
                 _log.Debug("Creating client for request...");
                 var client = new HttpClient(); // Create client for request
                 _log.Debug("Making request...");
-                var response = await client.GetAsync($"https://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&json=1&tags=sort:random+{default_tags}+{tags_str}"); // Make request
+                var response = await client.GetAsync($"https://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&json=1&tags=sort:random+{defaultTags}+{tagsStr}"); // Make request
                 _log.Debug("Parsing request...");
-                dynamic response_json = Newtonsoft.Json.JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync()); // Parse request
+                dynamic responseJson = Newtonsoft.Json.JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync()); // Parse request
                 _log.Debug("Replying with file...");
-                await ReplyAsync(response_json.post[0].file_url.ToString(), messageReference: new Discord.MessageReference(Context.Message.Id)); // Don't touch this sacred bullshit
+                await ReplyAsync(responseJson.post[0].file_url.ToString(), messageReference: new Discord.MessageReference(Context.Message.Id)); // Don't touch this sacred bullshit
             }
             catch
             {
@@ -40,29 +40,29 @@ namespace Leirosa.Modules
         [Discord.Commands.Summary("Gets 5 random files from Gelbooru.")]
         [Discord.Commands.RequireNsfw(Group = "Private", ErrorMessage = "Channel must be NSFW or DM.")] // In an NSFW channel OR DM
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.DM, Group = "Private", ErrorMessage = "Channel must be NSFW or DM.")]
-        public async Task MGelbooruAsync([Discord.Commands.Summary("Tags to be queried")][Discord.Commands.Remainder]string tags_str = "")
+        public async Task MGelbooruAsync([Discord.Commands.Summary("Tags to be queried")][Discord.Commands.Name("tags")][Discord.Commands.Remainder]string tagsStr = "")
         {
             try
             {
                 _log.Debug("\"mgelbooru\" was called!");
 
                 _log.Debug("Obtaining default tags...");
-                var default_tags = Program.Config.DefaultGelbooruTags;
+                var defaultTags = Program.Config.DefaultGelbooruTags;
 
                 _log.Debug("Formatting requested tags...");
-                tags_str = tags_str.Replace(" ", "+"); // Format tags for API request
+                tagsStr = tagsStr.Replace(" ", "+"); // Format tags for API request
                 var count = 5; // Discord only embeds 5 images per message. If we wanted to surpass this limit, we would have to have it auto-post into separate consecutive messages.
 
                 _log.Debug("Creating client for request...");
                 var client = new HttpClient(); // Create client for request
                 _log.Debug("Making request...");
-                var response = await client.GetAsync($"https://gelbooru.com/index.php?page=dapi&s=post&q=index&limit={count}&json=1&tags=sort:random+{default_tags}+{tags_str}"); // Make request
+                var response = await client.GetAsync($"https://gelbooru.com/index.php?page=dapi&s=post&q=index&limit={count}&json=1&tags=sort:random+{defaultTags}+{tagsStr}"); // Make request
                 _log.Debug("Parsing request...");
-                dynamic response_json = Newtonsoft.Json.JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync()); // Parse request
+                dynamic responseJson = Newtonsoft.Json.JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync()); // Parse request
 
                 _log.Debug("Formatting output...");
                 var output = "";
-                foreach (var post in response_json.post)
+                foreach (var post in responseJson.post)
                 {
                     output += post.file_url.ToString() + "\n";
                 }
@@ -81,7 +81,7 @@ namespace Leirosa.Modules
         [Discord.Commands.Summary("Requests 1-25 random files from Gelbooru.")]
         [Discord.Commands.RequireNsfw(Group = "Private", ErrorMessage = "Channel must be NSFW or DM.")] // In an NSFW channel OR DM
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.DM, Group = "Private", ErrorMessage = "Channel must be NSFW or DM.")]
-        public async Task XGelbooruAsync([Discord.Commands.Summary("(<25) Number of posts to request")]uint count, [Discord.Commands.Summary("Tags to be queried")][Discord.Commands.Remainder]string tags_str = "")
+        public async Task XGelbooruAsync([Discord.Commands.Summary("(<25) Number of posts to request")]uint count, [Discord.Commands.Summary("Tags to be queried")][Discord.Commands.Name("tags")][Discord.Commands.Remainder]string tagsStr = "")
         {
             try
             {
@@ -95,23 +95,23 @@ namespace Leirosa.Modules
                 }
 
                 _log.Debug("Obtaining default tags...");
-                var default_tags = Program.Config.DefaultGelbooruTags;
+                var defaultTags = Program.Config.DefaultGelbooruTags;
 
                 _log.Debug("Formatting requested tags...");
-                tags_str = tags_str.Replace(" ", "+"); // Format tags for API request
+                tagsStr = tagsStr.Replace(" ", "+"); // Format tags for API request
 
                 _log.Debug("Creating client for request...");
                 var client = new HttpClient(); // Create client for request
                 _log.Debug("Making request...");
-                var response = await client.GetAsync($"https://gelbooru.com/index.php?page=dapi&s=post&q=index&limit={count}&json=1&tags=sort:random+{default_tags}+{tags_str}"); // Make request
+                var response = await client.GetAsync($"https://gelbooru.com/index.php?page=dapi&s=post&q=index&limit={count}&json=1&tags=sort:random+{defaultTags}+{tagsStr}"); // Make request
                 _log.Debug("Parsing request...");
-                dynamic response_json = Newtonsoft.Json.JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync()); // Parse request
+                dynamic responseJson = Newtonsoft.Json.JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync()); // Parse request
 
                 // Some crazy bullshit that separates the http response's post links into chunks of 5 and replies with those chunks
                 _log.Debug("Formatting output...");
                 var i = 0;
                 var output = "";
-                foreach (var post in response_json.post)
+                foreach (var post in responseJson.post)
                 {
                     i += 1;
                     output += post.file_url.ToString() + "\n";

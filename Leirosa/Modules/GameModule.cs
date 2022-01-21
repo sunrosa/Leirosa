@@ -38,30 +38,30 @@ namespace Leirosa.Modules
 
             _log.Debug("Initializing random service and card name array...");
             var random = new Random();
-            var card_names = new string[]{"Two of Clubs", "Three of Clubs", "Four of Clubs", "Five of Clubs", "Six of Clubs", "Seven of Clubs", "Eight of Clubs", "Nine of Clubs", "Ten of Clubs", "Jack of Clubs", "Queen of Clubs", "King of Clubs", "Ace of Clubs", "Two of Spades", "Three of Spades", "Four of Spades", "Five of Spades", "Six of Spades", "Seven of Spades", "Eight of Spades", "Nine of Spades", "Ten of Spades", "Jack of Spades", "Queen of Spades", "King of Spades", "Ace of Spades", "Two of Hearts", "Three of Hearts", "Four of Hearts", "Five of Hearts", "Six of Hearts", "Seven of Hearts", "Eight of Hearts", "Nine of Hearts", "Ten of Hearts", "Jack of Hearts", "Queen of Hearts", "King of Hearts", "Ace of Hearts", "Two of Diamonds", "Three of Diamonds", "Four of Diamonds", "Five of Diamonds", "Six of Diamonds", "Seven of Diamonds", "Eight of Diamonds", "Nine of Diamonds", "Ten of Diamonds", "Jack of Diamonds", "Queen of Diamonds", "King of Diamonds", "Ace of Diamonds"};
+            var cardNames = new string[]{"Two of Clubs", "Three of Clubs", "Four of Clubs", "Five of Clubs", "Six of Clubs", "Seven of Clubs", "Eight of Clubs", "Nine of Clubs", "Ten of Clubs", "Jack of Clubs", "Queen of Clubs", "King of Clubs", "Ace of Clubs", "Two of Spades", "Three of Spades", "Four of Spades", "Five of Spades", "Six of Spades", "Seven of Spades", "Eight of Spades", "Nine of Spades", "Ten of Spades", "Jack of Spades", "Queen of Spades", "King of Spades", "Ace of Spades", "Two of Hearts", "Three of Hearts", "Four of Hearts", "Five of Hearts", "Six of Hearts", "Seven of Hearts", "Eight of Hearts", "Nine of Hearts", "Ten of Hearts", "Jack of Hearts", "Queen of Hearts", "King of Hearts", "Ace of Hearts", "Two of Diamonds", "Three of Diamonds", "Four of Diamonds", "Five of Diamonds", "Six of Diamonds", "Seven of Diamonds", "Eight of Diamonds", "Nine of Diamonds", "Ten of Diamonds", "Jack of Diamonds", "Queen of Diamonds", "King of Diamonds", "Ace of Diamonds"};
 
             _log.Debug("Shuffling cards...");
-            card_names = card_names.OrderBy(x => random.Next()).ToArray(); // Shuffle
+            cardNames = cardNames.OrderBy(x => random.Next()).ToArray(); // Shuffle
 
             if (count == 1)
             {
                 _log.Debug("Caller requested only one card. Replying with first of shuffled card array...");
-                var card = card_names[0];
+                var card = cardNames[0];
                 await ReplyAsync($"You draw a {card}!");
                 return;
             }
 
             _log.Debug("Caller requested more than one card. Creating array slice from 0 to selection size of card array...");
-            var selected_cards = new List<string>(card_names[0..count]);
+            var selectedCards = new List<string>(cardNames[0..count]);
 
             // "Pop" last card
             _log.Debug("Popping last card for grammatical \"and\"...");
-            var last_card = selected_cards.Last();
-            selected_cards.RemoveAt(selected_cards.Count - 1);
+            var lastCard = selectedCards.Last();
+            selectedCards.RemoveAt(selectedCards.Count - 1);
 
             _log.Debug("Arranging cards grammatically...");
-            var output = selected_cards.Aggregate((a, b) => a + ", " + b);
-            output += ", and " + last_card;
+            var output = selectedCards.Aggregate((a, b) => a + ", " + b);
+            output += ", and " + lastCard;
 
             _log.Debug("Replying...");
             await ReplyAsync($"You draw a {output}!");
@@ -207,34 +207,34 @@ namespace Leirosa.Modules
             }
 
             _log.Debug("Sorting sessions by start time...");
-            var data_sorted = data.OrderBy(x => x.Value.StartTime);
+            var dataSorted = data.OrderBy(x => x.Value.StartTime);
 
             var output = "```\n";
-            foreach (var pair in data_sorted)
+            foreach (var pair in dataSorted)
             {
                 var user = Context.Client.GetUser(pair.Key);
                 var elapsed = time - pair.Value.StartTime;
-                var elapsed_update = time - pair.Value.UpdateTime;
-                var elapsed_paused = time - pair.Value.PauseTime;
-                var pause_eta = pair.Value.UnpauseTime - pair.Value.PauseTime;
-                var last_updated = "";
+                var elapsedUpdate = time - pair.Value.UpdateTime;
+                var elapsedPaused = time - pair.Value.PauseTime;
+                var pauseEta = pair.Value.UnpauseTime - pair.Value.PauseTime;
+                var lastUpdated = "";
                 var paused = "";
                 if (pair.Value.IsUpdated)
                 {
                     _log.Debug("Session has been updated at least once. Adding last updated detail...");
-                    last_updated = $" (updated {ModuleHelpers.FormatTimeSpan(elapsed_update)} ago)";
+                    lastUpdated = $" (updated {ModuleHelpers.FormatTimeSpan(elapsedUpdate)} ago)";
                 }
                 if (pair.Value.IsPaused && pair.Value.UnpauseTime == new DateTime())
                 {
                     _log.Debug("Session is paused. Adding paused detail without ETA...");
-                    paused = $" (AFK {ModuleHelpers.FormatTimeSpan(elapsed_paused)})";
+                    paused = $" (AFK {ModuleHelpers.FormatTimeSpan(elapsedPaused)})";
                 }
                 else if (pair.Value.IsPaused && pair.Value.UnpauseTime != new DateTime())
                 {
                     _log.Debug("Session is paused. Adding paused detail wtih ETA...");
-                    paused = $" (AFK {ModuleHelpers.FormatTimeSpan(elapsed_paused)} / {ModuleHelpers.FormatTimeSpan(pause_eta)})";
+                    paused = $" (AFK {ModuleHelpers.FormatTimeSpan(elapsedPaused)} / {ModuleHelpers.FormatTimeSpan(pauseEta)})";
                 }
-                output += $"[{ModuleHelpers.FormatTimeSpan(elapsed)}] {user.Username}#{user.Discriminator}: {pair.Value.Activity ?? "(Unspecified)"}{last_updated}{paused}\n";
+                output += $"[{ModuleHelpers.FormatTimeSpan(elapsed)}] {user.Username}#{user.Discriminator}: {pair.Value.Activity ?? "(Unspecified)"}{lastUpdated}{paused}\n";
             }
             output += "```";
 
@@ -270,7 +270,7 @@ namespace Leirosa.Modules
                 return;
             }
 
-            var time_elapsed = DateTime.Now - data[Context.User.Id].StartTime;
+            var timeElapsed = DateTime.Now - data[Context.User.Id].StartTime;
 
             _log.Debug("Removing user from local dictionary...");
             data.Remove(Context.User.Id);
@@ -293,7 +293,7 @@ namespace Leirosa.Modules
             File.WriteAllText(Program.Config.VRChatPath, Newtonsoft.Json.JsonConvert.SerializeObject(data));
 
             _log.Debug("Replying...");
-            await ReplyAsync($"Session lasted {ModuleHelpers.FormatTimeSpan(time_elapsed)}.");
+            await ReplyAsync($"Session lasted {ModuleHelpers.FormatTimeSpan(timeElapsed)}.");
         }
 
         [Discord.Commands.Command("vrcpause")]
@@ -373,9 +373,9 @@ namespace Leirosa.Modules
             }
 
             var session = data[Context.User.Id];
-            var elapsed_paused = time - session.PauseTime;
-            var pause_eta = session.UnpauseTime - session.PauseTime;
-            var has_eta = session.UnpauseTime != new DateTime();
+            var elapsedPaused = time - session.PauseTime;
+            var pauseEta = session.UnpauseTime - session.PauseTime;
+            var hasEta = session.UnpauseTime != new DateTime();
             session.IsPaused = false;
             session.PauseTime = new DateTime();
             session.UnpauseTime = new DateTime();
@@ -385,8 +385,8 @@ namespace Leirosa.Modules
             File.WriteAllText(Program.Config.VRChatPath, Newtonsoft.Json.JsonConvert.SerializeObject(data));
 
             _log.Debug("Replying...");
-            if (has_eta) await ReplyAsync($"You were AFK for {ModuleHelpers.FormatTimeSpan(elapsed_paused)} out of {ModuleHelpers.FormatTimeSpan(pause_eta)}.");
-            else await ReplyAsync($"You were AFK for {ModuleHelpers.FormatTimeSpan(elapsed_paused)}.");
+            if (hasEta) await ReplyAsync($"You were AFK for {ModuleHelpers.FormatTimeSpan(elapsedPaused)} out of {ModuleHelpers.FormatTimeSpan(pauseEta)}.");
+            else await ReplyAsync($"You were AFK for {ModuleHelpers.FormatTimeSpan(elapsedPaused)}.");
         }
 
         [Discord.Commands.Command("echo")]

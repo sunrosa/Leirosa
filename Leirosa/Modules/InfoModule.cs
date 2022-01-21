@@ -35,15 +35,15 @@ namespace Leirosa.Modules
                         parameters.Add($"{parameter.Name}{(parameter.IsOptional ? " (optional)" : "")}{(parameter.IsRemainder ? " (remainder)" : "")}");
                     }
 
-                    var parameters_str = "";
+                    var parametersStr = "";
                     try
                     {
-                        parameters_str = parameters.Aggregate((a, b) => a + ", " + b);
+                        parametersStr = parameters.Aggregate((a, b) => a + ", " + b);
                     }
                     catch (InvalidOperationException)
                     {}
 
-                    output += $"({c.Aliases.Aggregate((a, b) => a + ", " + b)}) ({parameters_str}) [{c.Module.Name.Remove(c.Module.Name.Length - 6)}]: {c.Summary}\n";
+                    output += $"({c.Aliases.Aggregate((a, b) => a + ", " + b)}) ({parametersStr}) [{c.Module.Name.Remove(c.Module.Name.Length - 6)}]: {c.Summary}\n";
                 }
                 output += "\n```";
 
@@ -61,10 +61,10 @@ namespace Leirosa.Modules
                     return;
                 }
 
-                string? parameter_output = null;
+                string? parameterOutput = null;
                 foreach (var parameter in commandInfo.Parameters)
                 {
-                    parameter_output += $"{parameter.Name}{(parameter.Summary != "" && parameter.Summary != null ? $": {parameter.Summary}" : "")}{(parameter.IsOptional ? " (optional)" : "")}{(parameter.IsRemainder ? " (remainder)" : "")}\n";
+                    parameterOutput += $"{parameter.Name}{(parameter.Summary != "" && parameter.Summary != null ? $": {parameter.Summary}" : "")}{(parameter.IsOptional ? " (optional)" : "")}{(parameter.IsRemainder ? " (remainder)" : "")}\n";
                 }
 
                 var embed = new Discord.EmbedBuilder()
@@ -73,7 +73,7 @@ namespace Leirosa.Modules
                     .AddField("Aliases", commandInfo.Aliases.Aggregate((a, b) => a + ", " + b), true)
                     .AddField("Module", commandInfo.Module.Name.Remove(commandInfo.Module.Name.Length - 6), true)
                     .AddField("Preconditions", commandInfo.Preconditions.Count != 0 ? commandInfo.Preconditions.Select(p => $"[{p.GetType().Name}, {p.Group ?? "None"}]").Aggregate((a, b) => a + ", " + b) : "None") /* TODO: Attribute arguments should be included here.*/
-                    .AddField("Parameters", parameter_output ?? "None", false);
+                    .AddField("Parameters", parameterOutput ?? "None", false);
 
                 await ReplyAsync(embed: embed.Build());
             }
@@ -117,25 +117,25 @@ namespace Leirosa.Modules
             }
 
             _log.Debug("Sorting roles...");
-            var roles_sorted = user.Roles.OrderBy(x => x.Position).Reverse(); // Roles sorted by position in server
+            var rolesSorted = user.Roles.OrderBy(x => x.Position).Reverse(); // Roles sorted by position in server
 
-            var role_list = "";
-            var client_list = "";
-            var custom_status = "";
+            var roleList = "";
+            var clientList = "";
+            var customStatus = "";
 
-            foreach (var role in roles_sorted)
+            foreach (var role in rolesSorted)
             {
-                role_list += role.Name + "\n";
+                roleList += role.Name + "\n";
             }
             foreach (var client in user.ActiveClients)
             {
-                client_list += client.ToString() + "\n";
+                clientList += client.ToString() + "\n";
             }
 
             try
             {
                 _log.Debug("Attempting to fetch user's custom status...");
-                custom_status = $" ({(user.Activities.First() as Discord.CustomStatusGame).State})";
+                customStatus = $" ({(user.Activities.First() as Discord.CustomStatusGame).State})";
             }
             catch
             {
@@ -151,9 +151,9 @@ namespace Leirosa.Modules
             .AddField("Id", user.Id, true)
             .AddField("Account created", user.CreatedAt, true)
             .AddField("Joined", user.JoinedAt, true)
-            .AddField("Status", $"{user.Status.ToString()}{custom_status}", true)
-            .AddField("Active clients", client_list != "" ? client_list : "None", true)
-            .AddField($"Roles ({roles_sorted.Count()})", role_list, true);
+            .AddField("Status", $"{user.Status.ToString()}{customStatus}", true)
+            .AddField("Active clients", clientList != "" ? clientList : "None", true)
+            .AddField($"Roles ({rolesSorted.Count()})", roleList, true);
 
             _log.Debug("Replying...");
             await ReplyAsync(embed: embed.Build());
@@ -166,7 +166,7 @@ namespace Leirosa.Modules
         {
             _log.Debug("\"serverinfo\" was called!");
 
-            var discord_color = new Discord.Color(0, 0, 0);
+            var discordColor = new Discord.Color(0, 0, 0);
 
             // Some bullshit to get the average color of the server icon
             using (var client = new HttpClient())
@@ -180,13 +180,13 @@ namespace Leirosa.Modules
                 {
                     image.Resize(1, 1);
                     var color = image.GetPixels().First().ToColor();
-                    discord_color = new Discord.Color(color.R, color.G, color.B);
+                    discordColor = new Discord.Color(color.R, color.G, color.B);
                 }
             }
 
             _log.Debug("Building embed...");
             var embed = new Discord.EmbedBuilder();
-            embed.WithColor(discord_color)
+            embed.WithColor(discordColor)
             .AddField("Name", Context.Guild.Name, true)
             .AddField("Id", Context.Guild.Id, true)
             .AddField("Members", Context.Guild.MemberCount, true)
@@ -217,13 +217,13 @@ namespace Leirosa.Modules
             }
 
             _log.Debug("Creating permissions list...");
-            var permissions_string = user.GuildPermissions.ToList().Select(x => x.ToString()).Aggregate((a, b) => a + "\n" + b);
+            var permissionsString = user.GuildPermissions.ToList().Select(x => x.ToString()).Aggregate((a, b) => a + "\n" + b);
 
             _log.Debug("Building embed...");
             var embed = new Discord.EmbedBuilder();
             embed.WithColor(await ModuleHelpers.GetUserColor(user))
             .WithAuthor(new Discord.EmbedAuthorBuilder().WithName(user.Username).WithIconUrl(user.GetAvatarUrl()))
-            .AddField("Permissions", permissions_string);
+            .AddField("Permissions", permissionsString);
 
             _log.Debug("Replying...");
             await ReplyAsync(embed: embed.Build());
@@ -248,12 +248,12 @@ namespace Leirosa.Modules
                 channel = Context.Channel as Discord.WebSocket.SocketGuildChannel;
             }
 
-            var permissions_string = "";
+            var permissionsString = "";
 
             _log.Debug("Creating permissions list...");
             try
             {
-                permissions_string = user.GetPermissions(channel).ToList().Select(x => x.ToString()).Aggregate((a, b) => a + "\n" + b);
+                permissionsString = user.GetPermissions(channel).ToList().Select(x => x.ToString()).Aggregate((a, b) => a + "\n" + b);
             }
             catch (System.InvalidOperationException)
             {
@@ -266,7 +266,7 @@ namespace Leirosa.Modules
             var embed = new Discord.EmbedBuilder();
             embed.WithColor(await ModuleHelpers.GetUserColor(user))
             .WithAuthor(new Discord.EmbedAuthorBuilder().WithName(user.Username).WithIconUrl(user.GetAvatarUrl()))
-            .AddField($"Permissions in {channel.Name}", permissions_string);
+            .AddField($"Permissions in {channel.Name}", permissionsString);
 
             _log.Debug("Replying...");
             await ReplyAsync(embed: embed.Build());
@@ -362,14 +362,14 @@ namespace Leirosa.Modules
             _log.Debug("\"runtime\" was called!");
 
             _log.Debug("Fetching build configuration...");
-            var build_configuration = "UNKNOWN";
+            var buildConfiguration = "UNKNOWN";
 #if DEBUG
-            build_configuration = "DEBUG";
+            buildConfiguration = "DEBUG";
 #elif RELEASE
-            build_configuration = "RELEASE";
+            buildConfiguration = "RELEASE";
 #endif
 
-            var commit_sha = "";
+            var commitSha = "";
 
             _log.Debug("Fetching git HEAD sha...");
             try
@@ -386,7 +386,7 @@ namespace Leirosa.Modules
                     p.Start();
 
                     _log.Debug("Reading from process...");
-                    commit_sha = p.StandardOutput.ReadToEnd();
+                    commitSha = p.StandardOutput.ReadToEnd();
 
                     _log.Debug("Awaiting process exit...");
                     p.WaitForExit();
@@ -400,7 +400,7 @@ namespace Leirosa.Modules
             }
 
             _log.Debug("Replying...");
-            await ReplyAsync($"Running {Program.Config.BotName}{(commit_sha != "" ? $" {commit_sha[0..7]}" : "")} on .NET {Environment.Version} on {System.Net.Dns.GetHostName()} with build configuration {build_configuration}.");
+            await ReplyAsync($"Running {Program.Config.BotName}{(commitSha != "" ? $" {commitSha[0..7]}" : "")} on .NET {Environment.Version} on {System.Net.Dns.GetHostName()} with build configuration {buildConfiguration}.");
         }
 
         [Discord.Commands.Command("save")]

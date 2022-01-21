@@ -10,7 +10,7 @@ namespace Leirosa
         /// <summary>
         /// Timer that periodically calls <see cref="Save"/>
         /// </summary>
-        private System.Timers.Timer _save_timer;
+        private System.Timers.Timer _saveTimer;
 
         /// <summary>
         ///
@@ -33,12 +33,12 @@ namespace Leirosa
                 Invokations = new Dictionary<string, ulong>();
             }
 
-            _save_timer = new System.Timers.Timer(saveInterval);
+            _saveTimer = new System.Timers.Timer(saveInterval);
 
-            _save_timer.Elapsed += Save;
+            _saveTimer.Elapsed += Save;
             AppDomain.CurrentDomain.ProcessExit += Save;
 
-            _save_timer.Start();
+            _saveTimer.Start();
         }
 
         /// <summary>

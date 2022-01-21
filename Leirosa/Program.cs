@@ -7,11 +7,11 @@ namespace Leirosa
 
         public static Discord.WebSocket.DiscordSocketClient Client {get; set;}
         public static Discord.Commands.CommandService Commands {get; set;}
-        public static Data.Config Config {get; set;}
+        public static Data.Config Config {get; private set;}
         public static CommandTracker? CommandTracker {get; set;}
 
         private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
-        private bool _is_readied = false;
+        private bool _isReadied = false;
 
         public async Task MainAsync()
         {
@@ -72,7 +72,7 @@ namespace Leirosa
 
         private async Task Ready()
         {
-            if (_is_readied)
+            if (_isReadied)
             {
                 _log.Info("Already readied once. Returning out of Ready()...");
                 return;
@@ -81,16 +81,16 @@ namespace Leirosa
             _log.Debug("Client ready. Initializing CommandService...");
             Commands = new Discord.Commands.CommandService();
             _log.Debug("CommandService ready. Initializing CommandHandler...");
-            var command_handler = new CommandHandler(Client, Commands);
+            var commandHandler = new CommandHandler(Client, Commands);
             _log.Debug("Installing commands...");
-            await command_handler.InstallCommandsAsync();
+            await commandHandler.InstallCommandsAsync();
 
             if (Config.UseCustomStatus)
             {
                 _log.Debug("Setting custom status...");
                 await Client.SetActivityAsync(new Discord.Game(Config.Status)); // Apparently you can't set custom statuses for bots, so this is the best we can do.
             }
-            _is_readied = true;
+            _isReadied = true;
         }
 
         private Task Log(Discord.LogMessage msg)
