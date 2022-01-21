@@ -445,5 +445,12 @@ namespace Leirosa.Modules
                 await ReplyAsync("Command tracking is disabled in the bot config.");
             }
         }
+
+        [Discord.Commands.Command("ping")]
+        [Discord.Commands.Summary("Gets the bot's ping.")]
+        public async Task PingAsync()
+        {
+            await ReplyAsync($"{Context.Client.Latency}ms");
+        }
     }
 }
