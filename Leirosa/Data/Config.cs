@@ -106,5 +106,11 @@ namespace Leirosa.Data
         /// </summary>
         /// <value></value>
         public string CommandTrackerPath {get; set;}
+
+        /// <summary>
+        /// Log level to be used by the executing assembly (through NLog)
+        /// </summary>
+        /// <value></value>
+        public string LogLevel {get; set;}
     }
 }
