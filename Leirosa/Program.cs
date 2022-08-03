@@ -1,9 +1,12 @@
-﻿// Warning: This bot is designed to be private, used only within one guild per runtime instance.
+﻿using System.Reflection;
+// Warning: This bot is designed to be private, used only within one guild per runtime instance.
 namespace Leirosa
 {
     public class Program
     {
         public static Task Main(string[] args) => new Program().MainAsync();
+
+        public static string ExecutingPath {get; set;}
 
         public static Discord.WebSocket.DiscordSocketClient Client {get; set;}
         public static Discord.Commands.CommandService Commands {get; set;}
@@ -16,6 +19,8 @@ namespace Leirosa
         public async Task MainAsync()
         {
             {
+                ExecutingPath = AppDomain.CurrentDomain.BaseDirectory;
+
                 var config = new NLog.Config.LoggingConfiguration();
                 var logfile = new NLog.Targets.FileTarget("logfile"){FileName="log.log"}; // TODO: Set layout property to include method names in log entries
                 var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
@@ -51,7 +56,7 @@ namespace Leirosa
             Client.Log += Log;
 
             _log.Debug("Parsing workspace config...");
-            Config = Newtonsoft.Json.JsonConvert.DeserializeObject<Data.Config>(File.ReadAllText("config.json"));
+            Config = Newtonsoft.Json.JsonConvert.DeserializeObject<Data.Config>(File.ReadAllText($"{ExecutingPath}/config.json"));
 
             _log.Debug("Logging in...");
             await Client.LoginAsync(Discord.TokenType.Bot, Config.Token);

@@ -278,7 +278,7 @@ namespace Leirosa.Modules
         {
             _log.Debug("\"suggest\" was called!");
 
-            using (var writer = File.AppendText(Program.Config.SuggestionsPath))
+            using (var writer = File.AppendText($"{Program.ExecutingPath}/{Program.Config.SuggestionsPath}"))
             {
                 writer.WriteLine($"{DateTime.Now.ToString(Program.Config.DatetimeFormat)} - {Context.User.Username} [{Context.User.Id}] - {suggestion}");
             }
@@ -292,7 +292,7 @@ namespace Leirosa.Modules
         {
             _log.Debug("\"report\" was called!");
 
-            using (var writer = File.AppendText(Program.Config.ReportsPath))
+            using (var writer = File.AppendText($"{Program.ExecutingPath}/{Program.Config.ReportsPath}"))
             {
                 writer.WriteLine($"{DateTime.Now.ToString(Program.Config.DatetimeFormat)} - {Context.User.Username} [{Context.User.Id}] - {report}");
             }
