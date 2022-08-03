@@ -124,17 +124,5 @@ namespace Leirosa.Data
         /// </summary>
         /// <value></value>
         public string LogLevel {get; set;}
-
-        /// <summary>
-        /// ID of the horny jail role.
-        /// </summary>
-        /// <value></value>
-        public ulong HornyJailRoleId {get; set;}
-
-        /// <summary>
-        /// Enable to apply the horny jail role to people when they call NSFW commands.
-        /// </summary>
-        /// <value></value>
-        public bool ApplyHornyJail {get; set;}
     }
 }
