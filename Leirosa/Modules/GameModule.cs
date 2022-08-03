@@ -44,25 +44,24 @@ namespace Leirosa.Modules
 
         [Discord.Commands.Command("roll")]
         [Discord.Commands.Summary("Rolls dice.")]
-        public async Task RollAsync([Discord.Commands.Summary("Number of sides that the dice to be rolled have")]int sides = 6, [Discord.Commands.Summary("Number of dice to roll (limit of 20)")]int count = 1)
+        public async Task RollAsync([Discord.Commands.Summary("Number of dice to roll (limit of 20)")]int count = 1, [Discord.Commands.Summary("Number of sides that the dice to be rolled have")]int sides = 6)
         {
             _log.Debug("\"roll\" was called!");
 
-            if (count > 20)
+            if (count > 100)
             {
-                await ReplyAsync("Please enter a number equal to or lower than 20 for the count parameter.");
+                await ReplyAsync("Please enter a number equal to or lower than 100 for the count parameter.");
                 return;
             }
 
-            var output = "";
-
             var random = new Random();
+            var total = 0;
             for (var i = 0; i < count; i++)
             {
                 var roll = random.Next(1, sides+1);
-                output += $"{roll} out of {sides}!\n";
+                total += roll;
             }
-            await ReplyAsync(output);
+            await ReplyAsync($"{total} ({count}d{sides})");
         }
 
         [Discord.Commands.Command("draw")]
