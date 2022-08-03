@@ -34,12 +34,50 @@ namespace Leirosa
 
                 if (Release)
                 {
-                    config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logfile);
+                    var loglevel = NLog.LogLevel.Info;
+                    switch (Config.LogLevel)
+                    {
+                        case ("Debug"):
+                            loglevel = NLog.LogLevel.Debug;
+                        break;
+                        case ("Info"):
+                            loglevel = NLog.LogLevel.Info;
+                        break;
+                        case ("Warn"):
+                            loglevel = NLog.LogLevel.Warn;
+                        break;
+                        case ("Error"):
+                            loglevel = NLog.LogLevel.Error;
+                        break;
+                        case ("Fatal"):
+                            loglevel = NLog.LogLevel.Fatal;
+                        break;
+                    }
+                    config.AddRule(loglevel, NLog.LogLevel.Fatal, logfile);
                     config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logconsole);
                 }
                 else
                 {
-                    config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logfile);
+                    var loglevel = NLog.LogLevel.Debug;
+                    switch (Config.LogLevel)
+                    {
+                        case ("Debug"):
+                            loglevel = NLog.LogLevel.Debug;
+                        break;
+                        case ("Info"):
+                            loglevel = NLog.LogLevel.Info;
+                        break;
+                        case ("Warn"):
+                            loglevel = NLog.LogLevel.Warn;
+                        break;
+                        case ("Error"):
+                            loglevel = NLog.LogLevel.Error;
+                        break;
+                        case ("Fatal"):
+                            loglevel = NLog.LogLevel.Fatal;
+                        break;
+                    }
+                    config.AddRule(loglevel, NLog.LogLevel.Fatal, logfile);
                     config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logconsole);
                 }
 
@@ -51,12 +89,10 @@ namespace Leirosa
             if (Release)
             {
                 _log.Info("Running in RELEASE.");
-                _log.Info("File log level is INFO. Console log level is INFO.");
             }
             else
             {
                 _log.Info("Running in DEBUG.");
-                _log.Info("File log level is DEBUG. Console log level is INFO.");
             }
 
             _log.Debug("Creating client...");
