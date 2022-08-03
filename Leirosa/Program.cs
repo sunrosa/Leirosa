@@ -7,6 +7,7 @@ namespace Leirosa
         public static Task Main(string[] args) => new Program().MainAsync();
 
         public static string ExecutingPath {get; set;}
+        public static string ConfigPath {get; set;} = "Config.json";
 
         public static Discord.WebSocket.DiscordSocketClient Client {get; set;}
         public static Discord.Commands.CommandService Commands {get; set;}
@@ -56,7 +57,7 @@ namespace Leirosa
             Client.Log += Log;
 
             _log.Debug("Parsing workspace config...");
-            Config = Newtonsoft.Json.JsonConvert.DeserializeObject<Data.Config>(File.ReadAllText($"{ExecutingPath}/config.json"));
+            Config = Newtonsoft.Json.JsonConvert.DeserializeObject<Data.Config>(File.ReadAllText($"{ExecutingPath}/{ConfigPath}"));
 
             _log.Debug("Logging in...");
             await Client.LoginAsync(Discord.TokenType.Bot, Config.Token);
