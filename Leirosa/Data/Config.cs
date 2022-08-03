@@ -3,114 +3,112 @@ namespace Leirosa.Data
     /// <summary>
     /// Leirosa config.
     /// </summary>
-    public class Config
+    public class Config : IConfig
     {
-        /// <summary>
-        /// Discord API token used to log in to the bot.
-        /// </summary>
-        /// <value></value>
+        public string ExecutingPath {private get; set;}
+
+        /// <inheritdoc/>
+        public string DataPath {get; set;}
+
+        /// <inheritdoc/>
+        public string LogName {get; set;}
+
+        /// <inheritdoc/>
         public string Token {get; set;}
 
-        /// <summary>
-        /// The filepath that user suggestions will be written to.
-        /// </summary>
-        /// <value></value>
-        public string SuggestionsPath {get; set;}
+        /// <inheritdoc/>
+        public string SuggestionsPath
+        {
+            get
+            {
+                return $"{ExecutingPath}/{DataPath}/{suggestionsPath}";
+            }
+            set
+            {
+                suggestionsPath = value;
+            }
+        }
+        private string suggestionsPath;
 
-        /// <summary>
-        /// The filepath that user error reports will be written to.
-        /// </summary>
-        /// <value></value>
-        public string ReportsPath {get; set;}
+        /// <inheritdoc/>
+        public string ReportsPath
+        {
+            get
+            {
+                return $"{ExecutingPath}/{DataPath}/{reportsPath}";
+            }
+            set
+            {
+                reportsPath = value;
+            }
+        }
+        private string reportsPath;
 
-        /// <summary>
-        /// The filepath that user VRChat login statuses will be written to.
-        /// </summary>
-        /// <value></value>
-        public string VRChatPath {get; set;}
+        /// <inheritdoc/>
+        public string VRChatPath
+        {
+            get
+            {
+                return $"{ExecutingPath}/{DataPath}/{vrchatPath}";
+            }
+            set
+            {
+                vrchatPath = value;
+            }
+        }
+        private string vrchatPath;
 
-        /// <summary>
-        /// The Discord role ID that will be applied when logging into VRChat and removed when logging out of VRChat.
-        /// </summary>
-        /// <value></value>
+        /// <inheritdoc/>
         public ulong VRChatRoleId {get; set;}
 
-        /// <summary>
-        /// Gelbooru tags that appended to every query.
-        /// </summary>
-        /// <value></value>
+        /// <inheritdoc/>
         public string DefaultGelbooruTags {get; set;}
 
-        /// <summary>
-        /// Bot command prefix (used before commands to specify that they're commands).
-        /// </summary>
-        /// <value></value>
+        /// <inheritdoc/>
         public string Prefix {get; set;}
 
-        /// <summary>
-        /// Whether or not to calculate user-targeted embed colors by their avatar (otherwise calculates by their top role).
-        /// </summary>
-        /// <value></value>
+        /// <inheritdoc/>
         public bool EmbedColorFromUserAvatar {get; set;}
 
-        /// <summary>
-        /// Bot status to be displayed on the Discord bot's profile if <see cref="UseCustomStatus"/> is true.
-        /// </summary>
-        /// <value></value>
+        /// <inheritdoc/>
         public string Status {get; set;}
 
-        /// <summary>
-        /// Whether or not to display <see cref="Status"/> on the bot's profile.
-        /// </summary>
-        /// <value></value>
+        /// <inheritdoc/>
         public bool UseCustomStatus {get; set;}
 
-        /// <summary>
-        /// OAuth2 URL to invite the bot into Discord guilds.
-        /// </summary>
-        /// <value></value>
+        /// <inheritdoc/>
         public string InviteURL {get; set;}
 
-        /// <summary>
-        /// URL to the bot's source code.
-        /// </summary>
-        /// <value></value>
+        /// <inheritdoc/>
         public string SourceURL {get; set;}
 
-        /// <summary>
-        /// The bot's display name.
-        /// </summary>
-        /// <value></value>
+        /// <inheritdoc/>
         public string BotName {get; set;}
 
-        /// <summary>
-        /// Discord IDs of this bot's developers.
-        /// </summary>
-        /// <value></value>
+        /// <inheritdoc/>
         public List<ulong> DeveloperIds {get; set;}
 
-        /// <summary>
-        /// Format string used when converting DateTime objects to strings.
-        /// </summary>
-        /// <value></value>
+        /// <inheritdoc/>
         public string DatetimeFormat {get; set;}
 
-        /// <summary>
-        /// Whether or not to count all command invokations and output them into a json file.
-        /// </summary>
-        /// <value></value>
+        /// <inheritdoc/>
         public bool TrackInvokedCommands {get; set;}
 
-        /// <summary>
-        /// Path to track command invokations to.
-        /// </summary>
-        /// <value></value>
-        public string CommandTrackerPath {get; set;}
+        /// <inheritdoc/>
+        public string CommandTrackerPath
+        {
+            get
+            {
+                return $"{ExecutingPath}/{DataPath}/{commandTrackerPath}";
+            }
+            set
+            {
+                commandTrackerPath = value;
+            }
+        }
+        private string commandTrackerPath;
 
-        /// <summary>
-        /// Log level to be used by the executing assembly (through NLog).
-        /// </summary>
-        /// <value></value>
+        /// <inheritdoc/>
         public string LogLevel {get; set;}
     }
 }
