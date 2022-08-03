@@ -6,16 +6,40 @@ namespace Leirosa.Modules
 
         [Discord.Commands.Command("flip")]
         [Discord.Commands.Summary("Flips a coin.")]
-        public async Task FlipAsync()
+        public async Task FlipAsync([Discord.Commands.Summary("Number of coins to flip (limit of 20)")]int count = 1)
         {
             _log.Debug("\"flip\" was called!");
 
-            var random = new Random();
-            var result = "";
-            if (random.Next(2) == 1) result = "Heads";
-            else result = "Tails";
-            _log.Debug($"Result is {result}.");
-            await ReplyAsync($"{result}!");
+            if (count > 100)
+            {
+                await ReplyAsync("Please enter a number equal to or lower than 100 for the count parameter.");
+                return;
+            }
+
+            var output = "";
+
+            if (count == 1)
+            {
+                var random = new Random();
+                var result = "";
+                if (random.Next(2) == 1) result = "Heads";
+                else result = "Tails";
+                output += $"{result}!\n";
+            }
+            else
+            {
+                var results = new Dictionary<int, int>();
+                var random = new Random();
+                for (var i = 0; i < count; i++)
+                {
+                    var result = random.Next(2);
+                    results[result] = results.GetValueOrDefault(result, 0) + 1;
+                }
+
+                output = $"Heads: {results[0]}\nTails: {results[1]}\n";
+            }
+
+            await ReplyAsync(output);
         }
 
         [Discord.Commands.Command("roll")]
@@ -26,7 +50,7 @@ namespace Leirosa.Modules
 
             if (count > 20)
             {
-                ReplyAsync("Please enter a number equal to or lower than 20 for the count parameter.");
+                await ReplyAsync("Please enter a number equal to or lower than 20 for the count parameter.");
                 return;
             }
 
