@@ -118,7 +118,7 @@ namespace Leirosa
 
             Client.Ready += Ready; // Call Ready() when the client is ready.
 
-            if (Config.TrackInvokedCommands) Program.CommandTracker = new CommandTracker(Program.Config.VRChatPath);
+            if (Config.TrackInvokedCommands) Program.CommandTracker = new CommandTracker(Program.Config.CommandTrackerPath);
 
             await Task.Delay(-1); // Block the thread to prevent the program from closing (infinite wait)
         }
@@ -182,21 +182,21 @@ namespace Leirosa
 
         public void ValidateConfig(Leirosa.Data.Config config)
         {
-            if (config.DataPath == null)
+            if (config.DataPath == null || config.DataPath == "")
                 throw new ConfigException("DataPath must be configured.");
-            if (config.LogName == null)
+            if (config.LogName == null || config.LogName == "")
                 throw new ConfigException("LogName must be configured.");
-            if (config.SuggestionsPath == null)
+            if (config.SuggestionsPath == null || config.SuggestionsPath == "")
                 throw new ConfigException("SuggestionsPath must be configured.");
-            if (config.ReportsPath == null)
+            if (config.ReportsPath == null || config.ReportsPath == "")
                 throw new ConfigException("ReportsPath must be configured.");
-            if (config.Prefix == null)
+            if (config.Prefix == null || config.Prefix == "")
                 throw new ConfigException("Prefix must be configured.");
-            if (config.UseCustomStatus && config.Status == null)
+            if (config.UseCustomStatus && (config.Status == null || config.Status == ""))
                 throw new ConfigException("Must configure Status if UseCustomStatus is true.");
-            if (config.BotName == null)
+            if (config.BotName == null || config.BotName == "")
                 throw new ConfigException("BotName must be configured.");
-            if (config.TrackInvokedCommands && config.CommandTrackerPath == null)
+            if (config.TrackInvokedCommands && (config.CommandTrackerPath == null || config.CommandTrackerPath == ""))
                 throw new ConfigException("Must configure CommandTrackerPath if TrackInvokedCommands is true.");
         }
     }
