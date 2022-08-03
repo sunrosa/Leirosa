@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Runtime.CompilerServices;
+using System.Reflection;
 // Warning: This bot is designed to be private, used only within one guild per runtime instance.
 namespace Leirosa
 {
@@ -34,6 +35,7 @@ namespace Leirosa
 
                 // Parse workspace config
                 Config = Newtonsoft.Json.JsonConvert.DeserializeObject<Data.Config>(File.ReadAllText($"{ExecutingPath}/{ConfigPath}"));
+                ValidateConfig(Config);
 
                 if (Release)
                 {
@@ -173,6 +175,22 @@ namespace Leirosa
             }
 
             return Task.CompletedTask;
+        }
+
+        public void ValidateConfig(Leirosa.Data.Config config)
+        {
+            if (config.SuggestionsPath == null)
+                throw new ConfigException("SuggestionsPath must be configured.");
+            if (config.ReportsPath == null)
+                throw new ConfigException("ReportsPath must be configured.");
+            if (config.Prefix == null)
+                throw new ConfigException("Prefix must be configured.");
+            if (config.UseCustomStatus && config.Status == null)
+                throw new ConfigException("Must configure Status if UseCustomStatus is true.");
+            if (config.BotName == null)
+                throw new ConfigException("BotName must be configured.");
+            if (config.TrackInvokedCommands && config.CommandTrackerPath == null)
+                throw new ConfigException("Must configure CommandTrackerPath if TrackInvokedCommands is true.");
         }
     }
 }
