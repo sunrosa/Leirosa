@@ -112,5 +112,7 @@ namespace Leirosa.Data
         /// </summary>
         /// <value></value>
         public string LogLevel {get; set;}
+        public ulong HornyJailRoleId {get; set;}
+        public bool ApplyHornyJail {get; set;}
     }
 }

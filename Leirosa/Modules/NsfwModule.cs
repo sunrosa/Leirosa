@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 namespace Leirosa.Modules
 {
     public class NsfwModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCommandContext>
@@ -14,6 +15,12 @@ namespace Leirosa.Modules
             {
                 _log.Debug("\"gelbooru\" was called!");
 
+                if (Program.Config.ApplyHornyJail)
+                {
+                    _log.Debug("Applying Horny Jail role...");
+                    await (Context.User as Discord.WebSocket.SocketGuildUser).AddRoleAsync(Program.Config.HornyJailRoleId);
+                }
+
                 _log.Debug("Obtaining default tags...");
                 var defaultTags = Program.Config.DefaultGelbooruTags;
 
@@ -29,9 +36,9 @@ namespace Leirosa.Modules
                 _log.Debug("Replying with file...");
                 await ReplyAsync(responseJson.post[0].file_url.ToString(), messageReference: new Discord.MessageReference(Context.Message.Id)); // Don't touch this sacred bullshit
             }
-            catch
+            catch (Exception e)
             {
-                _log.Warn("An exception was thrown. Replying with \"Not found.\"");
+                _log.Warn($"{e} was thrown. Replying with \"Not found.\"");
                 await ReplyAsync("Not found.");
             }
         }
@@ -45,6 +52,12 @@ namespace Leirosa.Modules
             try
             {
                 _log.Debug("\"mgelbooru\" was called!");
+
+                if (Program.Config.ApplyHornyJail)
+                {
+                    _log.Debug("Applying Horny Jail role...");
+                    await (Context.User as Discord.WebSocket.SocketGuildUser).AddRoleAsync(Program.Config.HornyJailRoleId);
+                }
 
                 _log.Debug("Obtaining default tags...");
                 var defaultTags = Program.Config.DefaultGelbooruTags;
@@ -70,9 +83,9 @@ namespace Leirosa.Modules
                 _log.Debug("Replying with files...");
                 await ReplyAsync(output, messageReference: new Discord.MessageReference(Context.Message.Id));
             }
-            catch
+            catch (Exception e)
             {
-                _log.Warn("An exception was thrown. Replying with \"Not found.\"");
+                _log.Warn($"{e} was thrown. Replying with \"Not found.\"");
                 await ReplyAsync("Not found.");
             }
         }
@@ -86,6 +99,12 @@ namespace Leirosa.Modules
             try
             {
                 _log.Debug("\"xgelbooru\" was called!");
+
+                if (Program.Config.ApplyHornyJail)
+                {
+                    _log.Debug("Applying Horny Jail role...");
+                    await (Context.User as Discord.WebSocket.SocketGuildUser).AddRoleAsync(Program.Config.HornyJailRoleId);
+                }
 
                 if (count > 25)
                 {
@@ -130,9 +149,9 @@ namespace Leirosa.Modules
                 }
 
             }
-            catch
+            catch (Exception e)
             {
-                _log.Warn("An exception was thrown. Replying with \"Not found.\"");
+                _log.Warn($"{e} was thrown. Replying with \"Not found.\"");
                 await ReplyAsync("Not found.");
             }
         }
