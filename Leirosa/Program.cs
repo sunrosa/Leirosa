@@ -9,6 +9,12 @@ namespace Leirosa
         public static string ExecutingPath {get; set;}
         public static string ConfigPath {get; set;} = "Config.json";
 
+#if RELEASE
+        public static bool Release {get;} = true;
+#else
+        public static bool Release {get;} = false;
+#endif
+
         public static Discord.WebSocket.DiscordSocketClient Client {get; set;}
         public static Discord.Commands.CommandService Commands {get; set;}
         public static Data.Config Config {get; private set;}
@@ -26,26 +32,32 @@ namespace Leirosa
                 var logfile = new NLog.Targets.FileTarget("logfile"){FileName="log.log"}; // TODO: Set layout property to include method names in log entries
                 var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
 
-#if RELEASE
-                config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logfile);
-                config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logconsole);
-#else
-                config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logfile);
-                config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logconsole);
-#endif
+                if (Release)
+                {
+                    config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logfile);
+                    config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logconsole);
+                }
+                else
+                {
+                    config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Fatal, logfile);
+                    config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logconsole);
+                }
 
                 NLog.LogManager.Configuration = config;
             }
 
             _log.Info("Setup logger. Beginning of MainAsync().");
 
-#if RELEASE
-            _log.Info("Running in RELEASE.");
-            _log.Info("File log level is INFO. Console log level is INFO.");
-#else
-            _log.Info("Running in DEBUG.");
-            _log.Info("File log level is DEBUG. Console log level is INFO.");
-#endif
+            if (Release)
+            {
+                _log.Info("Running in RELEASE.");
+                _log.Info("File log level is INFO. Console log level is INFO.");
+            }
+            else
+            {
+                _log.Info("Running in DEBUG.");
+                _log.Info("File log level is DEBUG. Console log level is INFO.");
+            }
 
             _log.Debug("Creating client...");
             Client = new Discord.WebSocket.DiscordSocketClient(new Discord.WebSocket.DiscordSocketConfig(){
