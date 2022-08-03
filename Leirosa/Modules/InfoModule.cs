@@ -10,6 +10,8 @@ namespace Leirosa.Modules
         {
             _log.Debug("\"help\" was called!");
 
+            var chunkSize = 15;
+
             if (command == "")
             {
                 _log.Debug("Command parameter is empty. Supplying general help...");
@@ -24,31 +26,34 @@ namespace Leirosa.Modules
                 }
 
                 _log.Debug("Obtaining list of all commands...");
-                var commands = Program.Commands.Commands.ToList();
+                var commands = Program.Commands.Commands.ToList().Select((x, i) => new { Index = i, Value = x }).GroupBy(x => x.Index / chunkSize).Select(x => x.Select(v => v.Value).ToList()).ToList();
                 _log.Debug("Formatting as help text...");
-                var output = "```\n";
-                foreach (var c in commands)
+                foreach (var commandsChunk in commands)
                 {
-                    var parameters = new List<string>();
-                    foreach (var parameter in c.Parameters)
+                    var output = "```\n";
+                    foreach (var c in commandsChunk)
                     {
-                        parameters.Add($"{parameter.Name}{(parameter.IsOptional ? " (optional)" : "")}{(parameter.IsRemainder ? " (remainder)" : "")}");
-                    }
+                        var parameters = new List<string>();
+                        foreach (var parameter in c.Parameters)
+                        {
+                            parameters.Add($"{parameter.Name}{(parameter.IsOptional ? " (optional)" : "")}{(parameter.IsRemainder ? " (remainder)" : "")}");
+                        }
 
-                    var parametersStr = "";
-                    try
-                    {
-                        parametersStr = parameters.Aggregate((a, b) => a + ", " + b);
-                    }
-                    catch (InvalidOperationException)
-                    {}
+                        var parametersStr = "";
+                        try
+                        {
+                            parametersStr = parameters.Aggregate((a, b) => a + ", " + b);
+                        }
+                        catch (InvalidOperationException)
+                        {}
 
-                    output += $"({c.Aliases.Aggregate((a, b) => a + ", " + b)}) ({parametersStr}) [{c.Module.Name.Remove(c.Module.Name.Length - 6)}]: {c.Summary}\n";
+                        output += $"({c.Aliases.Aggregate((a, b) => a + ", " + b)}) ({parametersStr}) [{c.Module.Name.Remove(c.Module.Name.Length - 6)}]: {c.Summary}\n";
+                    }
+                    output += "\n```";
+
+                    _log.Debug("Replying...");
+                    await ReplyAsync(output);
                 }
-                output += "\n```";
-
-                _log.Debug("Replying...");
-                await ReplyAsync(output);
             }
             else
             {
