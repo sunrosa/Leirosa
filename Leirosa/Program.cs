@@ -191,6 +191,8 @@ namespace Leirosa
                 throw new ConfigException("BotName must be configured.");
             if (config.TrackInvokedCommands && config.CommandTrackerPath == null)
                 throw new ConfigException("Must configure CommandTrackerPath if TrackInvokedCommands is true.");
+            if (config.ApplyHornyJail && config.HornyJailRoleId == 0)
+                throw new ConfigException("Must configure HornyJailRoleId if ApplyHornyJail is true.");
         }
     }
 }
