@@ -24,16 +24,17 @@ namespace Leirosa
 
         public async Task MainAsync()
         {
+            ExecutingPath = AppDomain.CurrentDomain.BaseDirectory;
+
+            // Parse workspace config
+            Config = Newtonsoft.Json.JsonConvert.DeserializeObject<Data.Config>(File.ReadAllText($"{ExecutingPath}/{ConfigPath}"));
+            Config.ExecutingPath = ExecutingPath;
+            ValidateConfig(Config);
+
             {
-                ExecutingPath = AppDomain.CurrentDomain.BaseDirectory;
-
                 var config = new NLog.Config.LoggingConfiguration();
-                var logfile = new NLog.Targets.FileTarget("logfile"){FileName="log.log"}; // TODO: Set layout property to include method names in log entries
+                var logfile = new NLog.Targets.FileTarget("logfile"){FileName=$"{Config.DataPath}/{Config.LogName}",}; // TODO: Set layout property to include method names in log entries
                 var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
-
-                // Parse workspace config
-                Config = Newtonsoft.Json.JsonConvert.DeserializeObject<Data.Config>(File.ReadAllText($"{ExecutingPath}/{ConfigPath}"));
-                ValidateConfig(Config);
 
                 if (Release)
                 {
@@ -98,6 +99,9 @@ namespace Leirosa
                 _log.Info("Running in DEBUG.");
             }
 
+            _log.Info(" Creating directory in which to store bot runtime data...");
+            Directory.CreateDirectory($"{ExecutingPath}/{Config.DataPath}");
+
             _log.Debug("Creating client...");
             Client = new Discord.WebSocket.DiscordSocketClient(new Discord.WebSocket.DiscordSocketConfig(){
                 LogLevel = Discord.LogSeverity.Debug,
@@ -113,7 +117,7 @@ namespace Leirosa
 
             Client.Ready += Ready; // Call Ready() when the client is ready.
 
-            if (Config.TrackInvokedCommands) Program.CommandTracker = new CommandTracker($"{Program.ExecutingPath}/{Config.CommandTrackerPath}");
+            if (Config.TrackInvokedCommands) Program.CommandTracker = new CommandTracker(Program.Config.VRChatPath);
 
             await Task.Delay(-1); // Block the thread to prevent the program from closing (infinite wait)
         }
@@ -177,6 +181,10 @@ namespace Leirosa
 
         public void ValidateConfig(Leirosa.Data.Config config)
         {
+            if (config.DataPath == null)
+                throw new ConfigException("DataPath must be configured.");
+            if (config.LogName == null)
+                throw new ConfigException("LogName must be configured.");
             if (config.SuggestionsPath == null)
                 throw new ConfigException("SuggestionsPath must be configured.");
             if (config.ReportsPath == null)
