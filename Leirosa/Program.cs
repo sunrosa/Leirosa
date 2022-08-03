@@ -1,6 +1,5 @@
-﻿using System.Runtime.CompilerServices;
-using System.Reflection;
-// Warning: This bot is designed to be private, used only within one guild per runtime instance.
+﻿// Warning: This bot is designed on a custom basis per guild (server). One runtime will work on ONLY ONE guild!!! This branch is custom-built for a server titled "Rabbit Island" with the ID 485003271468089365, owned by Mint S. Decot and Ibis Sunrosa (developer).
+
 namespace Leirosa
 {
     public class Program
