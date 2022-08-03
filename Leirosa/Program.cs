@@ -115,7 +115,7 @@ namespace Leirosa
 
             Client.Ready += Ready; // Call Ready() when the client is ready.
 
-            if (Config.TrackInvokedCommands) Program.CommandTracker = new CommandTracker(Config.CommandTrackerPath);
+            if (Config.TrackInvokedCommands) Program.CommandTracker = new CommandTracker($"{Program.ExecutingPath}/{Config.CommandTrackerPath}");
 
             await Task.Delay(-1); // Block the thread to prevent the program from closing (infinite wait)
         }
