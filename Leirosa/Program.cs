@@ -32,10 +32,13 @@ namespace Leirosa
                 var logfile = new NLog.Targets.FileTarget("logfile"){FileName="log.log"}; // TODO: Set layout property to include method names in log entries
                 var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
 
+                // Parse workspace config
+                Config = Newtonsoft.Json.JsonConvert.DeserializeObject<Data.Config>(File.ReadAllText($"{ExecutingPath}/{ConfigPath}"));
+
                 if (Release)
                 {
                     var loglevel = NLog.LogLevel.Info;
-                    switch (Config.LogLevel)
+                    switch (Config.LogLevel ?? "")
                     {
                         case ("Debug"):
                             loglevel = NLog.LogLevel.Debug;
@@ -59,7 +62,7 @@ namespace Leirosa
                 else
                 {
                     var loglevel = NLog.LogLevel.Debug;
-                    switch (Config.LogLevel)
+                    switch (Config.LogLevel ?? "")
                     {
                         case ("Debug"):
                             loglevel = NLog.LogLevel.Debug;
@@ -103,9 +106,6 @@ namespace Leirosa
                 LogGatewayIntentWarnings = false
             });
             Client.Log += Log;
-
-            _log.Debug("Parsing workspace config...");
-            Config = Newtonsoft.Json.JsonConvert.DeserializeObject<Data.Config>(File.ReadAllText($"{ExecutingPath}/{ConfigPath}"));
 
             _log.Debug("Logging in...");
             await Client.LoginAsync(Discord.TokenType.Bot, Config.Token);
