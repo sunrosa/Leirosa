@@ -114,7 +114,7 @@ namespace Leirosa.Modules
                 await ReplyAsync($"Logging in at {time.ToString(Program.Config.DatetimeFormat)}...");
             }
 
-            if (Program.Config.VRChatRoleId != null && Program.Config.VRChatRoleId != 0)
+            if (Program.Config.VRChatRoleId != 0 && Program.Config.VRChatRoleId != 0)
             {
                 try
                 {
@@ -275,7 +275,7 @@ namespace Leirosa.Modules
             _log.Debug("Removing user from local dictionary...");
             data.Remove(Context.User.Id);
 
-            if (Program.Config.VRChatRoleId != null && Program.Config.VRChatRoleId != 0)
+            if (Program.Config.VRChatRoleId != 0 && Program.Config.VRChatRoleId != 0)
             {
                 try
                 {
