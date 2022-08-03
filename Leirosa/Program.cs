@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Reflection;
-// Warning: This bot is designed to be private, used only within one guild per runtime instance.
+﻿// Warning: This bot is designed on a custom basis per guild (server). One runtime will work on ONLY ONE guild!!! This branch is custom-built for a server titled "ball. (working title)" with the ID 996916717450170388, owned by JADEDVIPER with ID 155573072303226881.
 namespace Leirosa
 {
     public class Program
