@@ -5,6 +5,8 @@ namespace Leirosa
     {
         public static Task Main(string[] args) => new Program().MainAsync();
 
+        public const string Version = "1.0.0";
+
         public static string ExecutingPath {get; set;}
         public static string ConfigPath {get; set;} = "Config.json";
 
