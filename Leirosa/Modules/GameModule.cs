@@ -346,7 +346,7 @@ namespace Leirosa.Modules
             try
             {
                 _log.Debug("Reading VRChat users json to local dictionary...");
-                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, Data.VRChatSession>>(File.ReadAllText($"{Program.ExecutingPath}/{Program.Config.VRChatPath}"));
+                data = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<ulong, Data.VRChatSession>>(File.ReadAllText(Program.Config.VRChatPath));
             }
             catch
             {
