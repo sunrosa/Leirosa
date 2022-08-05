@@ -34,7 +34,7 @@ namespace Leirosa
 
             {
                 var config = new NLog.Config.LoggingConfiguration();
-                var logfile = new NLog.Targets.FileTarget("logfile"){FileName=$"{Config.DataPath}/{Config.LogName}",}; // TODO: Set layout property to include method names in log entries
+                var logfile = new NLog.Targets.FileTarget("logfile"){FileName=$"{Config.DataPath}/{Config.LogName}", Layout="${longdate}|${level}|${callsite}:${callsite-linenumber}|${threadid}|${message}"}; // TODO: Set layout property to include method names in log entries
                 var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
 
                 if (Release)
@@ -110,7 +110,7 @@ namespace Leirosa
                 GatewayIntents = Discord.GatewayIntents.All, // VERY IMPORTANT. SHIT DOESN'T WORK WITHOUT THIS. The Discord API basically neglects to send us shit (most notably SocketGuildUsers), unless we have all intents SPECIFIED in our config.
                 LogGatewayIntentWarnings = false
             });
-            Client.Log += Log;
+            Client.Log += ClientLog;
 
             _log.Debug("Logging in...");
             await Client.LoginAsync(Discord.TokenType.Bot, Config.Token);
@@ -152,7 +152,7 @@ namespace Leirosa
             _isReadied = true;
         }
 
-        private Task Log(Discord.LogMessage msg)
+        private Task ClientLog(Discord.LogMessage msg)
         {
             switch (msg.Severity)
             {
