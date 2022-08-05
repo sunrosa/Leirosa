@@ -405,7 +405,7 @@ namespace Leirosa.Modules
             }
 
             _log.Debug("Replying...");
-            await ReplyAsync($"Running {Program.Config.BotName}{(commitSha != "" ? $" {commitSha[0..7]}" : "")} on .NET {Environment.Version} on {System.Net.Dns.GetHostName()} with build configuration {buildConfiguration}.");
+            await ReplyAsync($"Running {Program.Config.BotName} v{Program.Version}{(commitSha != "" ? $" {commitSha[0..7]}" : "")} on .NET {Environment.Version} on {System.Net.Dns.GetHostName()} with build configuration {buildConfiguration}.");
         }
 
         [Discord.Commands.Command("save")]
