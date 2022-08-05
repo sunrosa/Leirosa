@@ -91,7 +91,7 @@ namespace Leirosa
                 NLog.LogManager.Configuration = config;
             }
 
-            _log.Info("Setup logger. Beginning of MainAsync().");
+            _log.Info("Logger setup.");
 
             if (Release)
             {
@@ -102,7 +102,7 @@ namespace Leirosa
                 _log.Info("Running in DEBUG.");
             }
 
-            _log.Info(" Creating directory in which to store bot runtime data...");
+            _log.Info("Checking (and creating if necessary) directory in which to store bot runtime data...");
             Directory.CreateDirectory($"{ExecutingPath}/{Config.DataPath}");
 
             _log.Debug("Creating client...");
@@ -123,12 +123,6 @@ namespace Leirosa
             if (Config.TrackInvokedCommands) Program.CommandTracker = new CommandTracker(Program.Config.CommandTrackerPath);
 
             await Task.Delay(-1); // Block the thread to prevent the program from closing (infinite wait)
-        }
-
-        public static void Shutdown()
-        {
-            _log.Info("Exiting cleanly...");
-            Environment.Exit(0);
         }
 
         private async Task Ready()
@@ -152,6 +146,12 @@ namespace Leirosa
                 await Client.SetActivityAsync(new Discord.Game(Config.Status)); // Apparently you can't set custom statuses for bots, so this is the best we can do.
             }
             _isReadied = true;
+        }
+
+        public static void Shutdown()
+        {
+            _log.Info("Exiting cleanly...");
+            Environment.Exit(0);
         }
 
         private Task ClientLog(Discord.LogMessage msg)
