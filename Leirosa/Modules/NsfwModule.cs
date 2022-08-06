@@ -29,7 +29,7 @@ namespace Leirosa.Modules
                 log.Debug("Replying with file...");
                 await ReplyAsync(responseJson.post[0].file_url.ToString(), messageReference: new Discord.MessageReference(Context.Message.Id)); // Don't touch this sacred bullshit
             }
-            catch
+            catch (Exception e)
             {
                 log.Warn($"{e} was thrown. Replying with \"Not found.\"");
                 await ReplyAsync("Not found.");
@@ -70,7 +70,7 @@ namespace Leirosa.Modules
                 log.Debug("Replying with files...");
                 await ReplyAsync(output, messageReference: new Discord.MessageReference(Context.Message.Id));
             }
-            catch
+            catch (Exception e)
             {
                 log.Warn($"{e} was thrown. Replying with \"Not found.\"");
                 await ReplyAsync("Not found.");
@@ -130,7 +130,7 @@ namespace Leirosa.Modules
                 }
 
             }
-            catch
+            catch (Exception e)
             {
                 log.Warn($"{e} was thrown. Replying with \"Not found.\"");
                 await ReplyAsync("Not found.");
