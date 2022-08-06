@@ -21,6 +21,8 @@ namespace Leirosa
         public static Data.Config Config {get; private set;}
         public static CommandTracker? CommandTracker {get; set;}
 
+        public static Hooks Hooks {get; set;}
+
         private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
         private bool _isReadied = false;
 
@@ -128,7 +130,7 @@ namespace Leirosa
         {
             if (_isReadied)
             {
-                _log.Info("Already readied once. Returning out of Ready()...");
+                _log.Warn("Already readied once. Returning out of Ready()...");
                 return;
             }
 
@@ -136,7 +138,7 @@ namespace Leirosa
             Commands = new Discord.Commands.CommandService();
             _log.Debug("CommandService ready. Initializing CommandHandler...");
             var commandHandler = new CommandHandler(Client, Commands);
-            _log.Debug("Installing commands...");
+            _log.Info("Installing commands...");
             await commandHandler.InstallCommandsAsync();
 
             if (Config.UseCustomStatus)
@@ -144,6 +146,10 @@ namespace Leirosa
                 _log.Debug("Setting custom status...");
                 await Client.SetActivityAsync(new Discord.Game(Config.Status)); // Apparently you can't set custom statuses for bots, so this is the best we can do.
             }
+
+            _log.Info("Initializing event hooks...");
+            Hooks = new Hooks();
+
             _isReadied = true;
         }
 

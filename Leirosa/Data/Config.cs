@@ -5,6 +5,10 @@ namespace Leirosa.Data
     /// </summary>
     public class Config : IConfig
     {
+        /// <summary>
+        /// Path of the executing program.
+        /// </summary>
+        /// <value></value>
         public string ExecutingPath {private get; set;}
 
         /// <inheritdoc/>
@@ -116,5 +120,14 @@ namespace Leirosa.Data
 
         /// <inheritdoc/>
         public bool ApplyHornyJail {get; set;}
+
+        /// <inheritdoc/>
+        public ulong FeetAppreciatorRoleId {get; set;}
+
+        /// <inheritdoc/>
+        public ulong FeetPicsChannelId {get; set;}
+
+        /// <inheritdoc/>
+        public bool ApplyFeetAppreciator {get; set;}
     }
 }

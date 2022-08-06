@@ -136,5 +136,24 @@ namespace Leirosa.Data
         /// </summary>
         /// <value></value>
         public bool ApplyHornyJail {get; set;}
+
+        /// <summary>
+        /// ID of the feet appreciator role.
+        /// </summary>
+        /// <value></value>
+        public ulong FeetAppreciatorRoleId {get; set;}
+
+        /// <summary>
+        /// ID of the #feet-pics channel.
+        /// </summary>
+        /// <value></value>
+        public ulong FeetPicsChannelId {get; set;}
+
+        // I swear they made me do this. I didn't want to do this...
+        /// <summary>
+        /// Enable to apply the feet appreciator role to people who have sent messages in the #feet-pics channel.
+        /// </summary>
+        /// <value></value>
+        public bool ApplyFeetAppreciator {get; set;}
     }
 }
