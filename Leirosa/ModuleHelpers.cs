@@ -2,23 +2,23 @@ namespace Leirosa
 {
     public static class ModuleHelpers
     {
-        private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
         public static async Task<Discord.Color> GetUserColor(Discord.WebSocket.SocketGuildUser user)
         {
-            _log.Debug("A color to be used with an embed targeting a user has been requested.");
+            log.Debug("A color to be used with an embed targeting a user has been requested.");
 
             var discordColor = new Discord.Color(0, 0, 0);
 
             if (Program.Config.EmbedColorFromUserAvatar)
             {
-                _log.Debug("Config opted to calculate embed color via user avatar.");
+                log.Debug("Config opted to calculate embed color via user avatar.");
 
                 // Some bullshit to get the average color of the user icon
                 using (var client = new HttpClient())
                 {
-                    _log.Debug("Retrieving user icon...");
+                    log.Debug("Retrieving user icon...");
                     var response = await client.GetAsync(user.GetAvatarUrl());
-                    _log.Debug("Converting HTTP response to image...");
+                    log.Debug("Converting HTTP response to image...");
                     var ms = new MemoryStream(await response.Content.ReadAsByteArrayAsync());
 
                     using (var image = new ImageMagick.MagickImage(ms))
@@ -31,17 +31,17 @@ namespace Leirosa
             }
             else
             {
-                _log.Debug("Config opted to calculate embed color via user's top role.");
+                log.Debug("Config opted to calculate embed color via user's top role.");
 
-                _log.Debug("Sorting roles...");
+                log.Debug("Sorting roles...");
                 var rolesSorted = user.Roles.OrderBy(x => x.Position).Reverse(); // Roles sorted by position in server
 
-                _log.Debug("Stepping through roles from top to bottom in order to find a color for the embed...");
+                log.Debug("Stepping through roles from top to bottom in order to find a color for the embed...");
                 foreach (var role in rolesSorted)
                 {
                     if (!(role.Color.R == 0 && role.Color.G == 0 && role.Color.B == 0))
                     {
-                        _log.Debug("Found a role color for the embed.");
+                        log.Debug("Found a role color for the embed.");
                         discordColor = role.Color;
                         break;
                     }
@@ -49,7 +49,7 @@ namespace Leirosa
 
                 if (discordColor.R == 0 && discordColor.G == 0 && discordColor.B == 0)
                 {
-                    _log.Debug("No role color was found for the embed. Setting the color to 200, 200, 200...");
+                    log.Debug("No role color was found for the embed. Setting the color to 200, 200, 200...");
                     discordColor = new Discord.Color(200, 200, 200);
                 }
             }

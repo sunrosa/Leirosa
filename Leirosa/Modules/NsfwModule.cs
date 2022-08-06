@@ -2,7 +2,7 @@ namespace Leirosa.Modules
 {
     public class NsfwModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCommandContext>
     {
-        private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 
         [Discord.Commands.Command("gelbooru")]
         [Discord.Commands.Summary("Gets a random file from Gelbooru.")]
@@ -12,26 +12,26 @@ namespace Leirosa.Modules
         {
             try // Bad practice to wrap everything in a try-catch
             {
-                _log.Debug("\"gelbooru\" was called!");
+                log.Debug("\"gelbooru\" was called!");
 
-                _log.Debug("Obtaining default tags...");
+                log.Debug("Obtaining default tags...");
                 var defaultTags = Program.Config.DefaultGelbooruTags;
 
-                _log.Debug("Formatting requested tags...");
+                log.Debug("Formatting requested tags...");
                 tagsStr = tagsStr.Replace(" ", "+"); // Format tags for API request
 
-                _log.Debug("Creating client for request...");
+                log.Debug("Creating client for request...");
                 var client = new HttpClient(); // Create client for request
-                _log.Debug("Making request...");
+                log.Debug("Making request...");
                 var response = await client.GetAsync($"https://gelbooru.com/index.php?page=dapi&s=post&q=index&limit=1&json=1&tags=sort:random+{defaultTags}+{tagsStr}"); // Make request
-                _log.Debug("Parsing request...");
+                log.Debug("Parsing request...");
                 dynamic responseJson = Newtonsoft.Json.JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync()); // Parse request
-                _log.Debug("Replying with file...");
+                log.Debug("Replying with file...");
                 await ReplyAsync(responseJson.post[0].file_url.ToString(), messageReference: new Discord.MessageReference(Context.Message.Id)); // Don't touch this sacred bullshit
             }
             catch
             {
-                _log.Warn("An exception was thrown. Replying with \"Not found.\"");
+                log.Warn($"{e} was thrown. Replying with \"Not found.\"");
                 await ReplyAsync("Not found.");
             }
         }
@@ -44,35 +44,35 @@ namespace Leirosa.Modules
         {
             try
             {
-                _log.Debug("\"mgelbooru\" was called!");
+                log.Debug("\"mgelbooru\" was called!");
 
-                _log.Debug("Obtaining default tags...");
+                log.Debug("Obtaining default tags...");
                 var defaultTags = Program.Config.DefaultGelbooruTags;
 
-                _log.Debug("Formatting requested tags...");
+                log.Debug("Formatting requested tags...");
                 tagsStr = tagsStr.Replace(" ", "+"); // Format tags for API request
                 var count = 5; // Discord only embeds 5 images per message. If we wanted to surpass this limit, we would have to have it auto-post into separate consecutive messages.
 
-                _log.Debug("Creating client for request...");
+                log.Debug("Creating client for request...");
                 var client = new HttpClient(); // Create client for request
-                _log.Debug("Making request...");
+                log.Debug("Making request...");
                 var response = await client.GetAsync($"https://gelbooru.com/index.php?page=dapi&s=post&q=index&limit={count}&json=1&tags=sort:random+{defaultTags}+{tagsStr}"); // Make request
-                _log.Debug("Parsing request...");
+                log.Debug("Parsing request...");
                 dynamic responseJson = Newtonsoft.Json.JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync()); // Parse request
 
-                _log.Debug("Formatting output...");
+                log.Debug("Formatting output...");
                 var output = "";
                 foreach (var post in responseJson.post)
                 {
                     output += post.file_url.ToString() + "\n";
                 }
 
-                _log.Debug("Replying with files...");
+                log.Debug("Replying with files...");
                 await ReplyAsync(output, messageReference: new Discord.MessageReference(Context.Message.Id));
             }
             catch
             {
-                _log.Warn("An exception was thrown. Replying with \"Not found.\"");
+                log.Warn($"{e} was thrown. Replying with \"Not found.\"");
                 await ReplyAsync("Not found.");
             }
         }
@@ -85,30 +85,30 @@ namespace Leirosa.Modules
         {
             try
             {
-                _log.Debug("\"xgelbooru\" was called!");
+                log.Debug("\"xgelbooru\" was called!");
 
                 if (count > 25)
                 {
-                    _log.Debug("User requested over 25 files at once. Returning...");
+                    log.Debug("User requested over 25 files at once. Returning...");
                     await ReplyAsync("Please request less than or equal to 25 files.");
                     return;
                 }
 
-                _log.Debug("Obtaining default tags...");
+                log.Debug("Obtaining default tags...");
                 var defaultTags = Program.Config.DefaultGelbooruTags;
 
-                _log.Debug("Formatting requested tags...");
+                log.Debug("Formatting requested tags...");
                 tagsStr = tagsStr.Replace(" ", "+"); // Format tags for API request
 
-                _log.Debug("Creating client for request...");
+                log.Debug("Creating client for request...");
                 var client = new HttpClient(); // Create client for request
-                _log.Debug("Making request...");
+                log.Debug("Making request...");
                 var response = await client.GetAsync($"https://gelbooru.com/index.php?page=dapi&s=post&q=index&limit={count}&json=1&tags=sort:random+{defaultTags}+{tagsStr}"); // Make request
-                _log.Debug("Parsing request...");
+                log.Debug("Parsing request...");
                 dynamic responseJson = Newtonsoft.Json.JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync()); // Parse request
 
                 // Some crazy bullshit that separates the http response's post links into chunks of 5 and replies with those chunks
-                _log.Debug("Formatting output...");
+                log.Debug("Formatting output...");
                 var i = 0;
                 var output = "";
                 foreach (var post in responseJson.post)
@@ -118,21 +118,21 @@ namespace Leirosa.Modules
 
                     if (i % 5 == 0)
                     {
-                        _log.Debug("Replying...");
+                        log.Debug("Replying...");
                         await ReplyAsync(output, messageReference: new Discord.MessageReference(Context.Message.Id));
                         output = "";
                     }
                 }
                 if (output != "")
                 {
-                    _log.Debug("URLs are left in the remainder of the foreach. Replying...");
+                    log.Debug("URLs are left in the remainder of the foreach. Replying...");
                     await ReplyAsync(output, messageReference: new Discord.MessageReference(Context.Message.Id));
                 }
 
             }
             catch
             {
-                _log.Warn("An exception was thrown. Replying with \"Not found.\"");
+                log.Warn($"{e} was thrown. Replying with \"Not found.\"");
                 await ReplyAsync("Not found.");
             }
         }
