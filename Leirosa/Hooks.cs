@@ -18,6 +18,7 @@ namespace Leirosa
             var author = (Discord.WebSocket.SocketGuildUser) message.Author;
             if (message.Channel.Id == Program.Config.FeetPicsChannelId && !author.Roles.Any(r => r.Id == Program.Config.FeetAppreciatorRoleId) && Program.Config.ApplyFeetAppreciator)
             {
+                _log.Debug($"Giving FeetAppreciator role to {author.Username} ({author.Id})...");
                 await author.AddRoleAsync(Program.Config.FeetAppreciatorRoleId);
             }
         }
