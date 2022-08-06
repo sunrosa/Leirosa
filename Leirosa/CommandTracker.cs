@@ -5,12 +5,12 @@ namespace Leirosa
     /// </summary>
     public class CommandTracker
     {
-        private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// Timer that periodically calls <see cref="Save"/>
         /// </summary>
-        private System.Timers.Timer _saveTimer;
+        private System.Timers.Timer saveTimer;
 
         /// <summary>
         ///
@@ -19,13 +19,13 @@ namespace Leirosa
         /// <param name="saveInterval">Interval in milliseconds to automatically save the invokation data to file</param>
         public CommandTracker(string filepath, double saveInterval = 60 * 60 * 1000)
         {
-            _log.Debug($"Constructing a new {nameof(CommandTracker)}...");
+            log.Debug($"Constructing a new {nameof(CommandTracker)}...");
 
             Filepath = filepath;
 
             try
             {
-            _log.Debug($"Deserializing json to {nameof(Invokations)}...");
+            log.Debug($"Deserializing json to {nameof(Invokations)}...");
             Invokations = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<string, ulong>>(File.ReadAllText(Filepath));
             }
             catch (FileNotFoundException)
@@ -33,12 +33,12 @@ namespace Leirosa
                 Invokations = new Dictionary<string, ulong>();
             }
 
-            _saveTimer = new System.Timers.Timer(saveInterval);
+            saveTimer = new System.Timers.Timer(saveInterval);
 
-            _saveTimer.Elapsed += Save;
+            saveTimer.Elapsed += Save;
             AppDomain.CurrentDomain.ProcessExit += Save;
 
-            _saveTimer.Start();
+            saveTimer.Start();
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Leirosa
         /// <param name="e"></param>
         public void Save(object? sender = null, EventArgs? e = null)
         {
-            _log.Info($"Serializing {nameof(Invokations)} and saving to {Filepath}...");
+            log.Info($"Serializing {nameof(Invokations)} and saving to {Filepath}...");
             File.WriteAllText(Filepath, Newtonsoft.Json.JsonConvert.SerializeObject(Invokations));
         }
 

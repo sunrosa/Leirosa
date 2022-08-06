@@ -2,23 +2,23 @@ namespace Leirosa
 {
     public class CommandHandler // The command handler as copied from the docs
     {
-        private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
-        private readonly Discord.WebSocket.DiscordSocketClient _client;
-        private readonly Discord.Commands.CommandService _commands;
+        private static readonly NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+        private readonly Discord.WebSocket.DiscordSocketClient client;
+        private readonly Discord.Commands.CommandService commands;
 
         // Retrieve client and CommandService instance via ctor
         public CommandHandler(Discord.WebSocket.DiscordSocketClient client, Discord.Commands.CommandService commands)
         {
-            _log.Debug("Constructing CommandHandler...");
-            _commands = commands;
-            _client = client;
+            log.Debug("Constructing CommandHandler...");
+            this.commands = commands;
+            this.client = client;
         }
 
         public async Task InstallCommandsAsync()
         {
             // Hook the MessageReceived event into our command handler
-            _log.Debug("Hooking Client.MessageReceived into HandleCommandAsync...");
-            _client.MessageReceived += HandleCommandAsync;
+            log.Debug("Hooking Client.MessageReceived into HandleCommandAsync...");
+            client.MessageReceived += HandleCommandAsync;
 
             // Here we discover all of the command modules in the entry
             // assembly and load them. Starting from Discord.NET 2.0, a
@@ -28,14 +28,14 @@ namespace Leirosa
             //
             // If you do not use Dependency Injection, pass null.
             // See Dependency Injection guide for more information.
-            _log.Debug("Reflecting for commands...");
-            await _commands.AddModulesAsync(assembly: System.Reflection.Assembly.GetEntryAssembly(),
+            log.Debug("Reflecting for commands...");
+            await commands.AddModulesAsync(assembly: System.Reflection.Assembly.GetEntryAssembly(),
                                             services: null);
         }
 
         private async Task HandleCommandAsync(Discord.WebSocket.SocketMessage messageParam)
         {
-            _log.Debug("Message received!");
+            log.Debug("Message received!");
 
             // Don't process the command if it was a system message
             var message = messageParam as Discord.WebSocket.SocketUserMessage;
@@ -47,35 +47,35 @@ namespace Leirosa
             // Determine if the message is a command based on the prefix and make sure no bots trigger commands
             if (!message.Content.StartsWith(Program.Config.Prefix) || message.Content.Length == 1 || message.Content[1] == Convert.ToChar(Program.Config.Prefix) || message.Author.IsBot)
             {
-                _log.Debug("Message was not bot command. Exiting command sequence...");
+                log.Debug("Message was not bot command. Exiting command sequence...");
                 return;
             }
-            _log.Debug("Message was bot command. Continuing command sequence...");
+            log.Debug("Message was bot command. Continuing command sequence...");
 
             // Create a WebSocket-based command context based on the message
-            var context = new Discord.Commands.SocketCommandContext(_client, message);
+            var context = new Discord.Commands.SocketCommandContext(client, message);
             if (!context.IsPrivate)
             {
-                _log.Debug($"Context created. Command was \"{context.Message.Content}\" sent by {context.User.Username} ({context.User.Id}) in channel {context.Channel.Id} in guild {context.Guild.Id}.");
+                log.Debug($"Context created. Command was \"{context.Message.Content}\" sent by {context.User.Username} ({context.User.Id}) in channel {context.Channel.Id} in guild {context.Guild.Id}.");
             }
             else
             {
-                _log.Debug($"Context created. Command was \"{context.Message.Content}\" sent by {context.User.Username} ({context.User.Id}) in channel {context.Channel.Id} (DM).");
+                log.Debug($"Context created. Command was \"{context.Message.Content}\" sent by {context.User.Username} ({context.User.Id}) in channel {context.Channel.Id} (DM).");
             }
 
             if (Program.Config.TrackInvokedCommands) Program.CommandTracker.TrackCommand(context, argPos);
 
             // Execute the command with the command context we just
             // created, along with the service provider for precondition checks.
-            _log.Debug("Executing command...");
-            var result = await _commands.ExecuteAsync(
+            log.Debug("Executing command...");
+            var result = await commands.ExecuteAsync(
                 context: context,
                 argPos: argPos,
                 services: null);
 
             if (!result.IsSuccess)
             {
-                _log.Debug($"Command had error \"{result.Error}: {result.ErrorReason}\"");
+                log.Debug($"Command had error \"{result.Error}: {result.ErrorReason}\"");
                 switch(result.Error)
                 {
                     case Discord.Commands.CommandError.UnknownCommand:
@@ -88,7 +88,7 @@ namespace Leirosa
                         await context.Channel.SendMessageAsync("User, role, or channel not found.");
                         break;
                     default:
-                        _log.Debug("No help text was available for the error at hand. Sending error itself as a message...");
+                        log.Debug("No help text was available for the error at hand. Sending error itself as a message...");
                         await context.Channel.SendMessageAsync($"{result.Error.GetType()}: {result.ErrorReason}");
                         break;
                 }

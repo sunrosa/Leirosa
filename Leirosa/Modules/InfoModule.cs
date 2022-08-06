@@ -2,32 +2,32 @@ namespace Leirosa.Modules
 {
     public class InfoModule : Discord.Commands.ModuleBase<Discord.Commands.SocketCommandContext>
     {
-        private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
+        private static readonly NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
 
         [Discord.Commands.Command("help")]
         [Discord.Commands.Summary("Provides command info.")]
         public async Task HelpAsync([Discord.Commands.Summary("The command to print help text for")]string command = "")
         {
-            _log.Debug("\"help\" was called!");
+            log.Debug("\"help\" was called!");
 
             var chunkSize = 15;
 
             if (command == "")
             {
-                _log.Debug("Command parameter is empty. Supplying general help...");
+                log.Debug("Command parameter is empty. Supplying general help...");
 
                 // One in a hundred chance the command replies with "help!" and then does nothing else
                 var random = new Random();
                 if (random.Next(0, 101) == 0)
                 {
-                    _log.Debug("Random check passed! Replying only with \"help!\"");
+                    log.Debug("Random check passed! Replying only with \"help!\"");
                     await ReplyAsync("help!");
                     return;
                 }
 
-                _log.Debug("Obtaining list of all commands...");
+                log.Debug("Obtaining list of all commands...");
                 var commands = Program.Commands.Commands.ToList().Select((x, i) => new { Index = i, Value = x }).GroupBy(x => x.Index / chunkSize).Select(x => x.Select(v => v.Value).ToList()).ToList();
-                _log.Debug("Formatting as help text...");
+                log.Debug("Formatting as help text...");
                 foreach (var commandsChunk in commands)
                 {
                     var output = "```\n";
@@ -51,13 +51,13 @@ namespace Leirosa.Modules
                     }
                     output += "\n```";
 
-                    _log.Debug("Replying...");
+                    log.Debug("Replying...");
                     await ReplyAsync(output);
                 }
             }
             else
             {
-                _log.Debug($"Help was requested for {command}.");
+                log.Debug($"Help was requested for {command}.");
 
                 var commandInfo = Program.Commands.Commands.First(c => c.Name == command || c.Aliases.Contains(command));
                 if (commandInfo == null)
@@ -88,7 +88,7 @@ namespace Leirosa.Modules
         [Discord.Commands.Summary("Prints my source code.")]
         public async Task SourceAsync()
         {
-            _log.Debug("\"source\" was called!");
+            log.Debug("\"source\" was called!");
             await ReplyAsync(Program.Config.SourceURL);
         }
 
@@ -96,7 +96,7 @@ namespace Leirosa.Modules
         [Discord.Commands.Summary("Prints invite URL to invite me into other servers.")]
         public async Task InviteAsync()
         {
-            _log.Debug("\"invite\" was called!");
+            log.Debug("\"invite\" was called!");
             await ReplyAsync(Program.Config.InviteURL);
         }
 
@@ -106,22 +106,22 @@ namespace Leirosa.Modules
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)] // Could be made workable in DM.
         public async Task WhoisAsync([Discord.Commands.Summary("Target user")]Discord.WebSocket.SocketGuildUser user = null)
         {
-            _log.Debug("\"whois\" was called!");
+            log.Debug("\"whois\" was called!");
 
             if (user == null)
             {
-                _log.Debug("No target. Setting target user to self...");
+                log.Debug("No target. Setting target user to self...");
                 user = Context.User as Discord.WebSocket.SocketGuildUser;
             }
 
             // Is the target user the bot itself?
             if (user.Id == Context.Client.CurrentUser.Id)
             {
-                _log.Debug("\"whois\" was called targeting the bot itself. Sending a friendly message...");
+                log.Debug("\"whois\" was called targeting the bot itself. Sending a friendly message...");
                 await ReplyAsync("That's me!");
             }
 
-            _log.Debug("Sorting roles...");
+            log.Debug("Sorting roles...");
             var rolesSorted = user.Roles.OrderBy(x => x.Position).Reverse(); // Roles sorted by position in server
 
             var roleList = "";
@@ -139,15 +139,15 @@ namespace Leirosa.Modules
 
             try
             {
-                _log.Debug("Attempting to fetch user's custom status...");
+                log.Debug("Attempting to fetch user's custom status...");
                 customStatus = $" ({(user.Activities.First() as Discord.CustomStatusGame).State})";
             }
             catch
             {
-                _log.Debug("User has no custom status. Continuing...");
+                log.Debug("User has no custom status. Continuing...");
             }
 
-            _log.Debug("Building embed...");
+            log.Debug("Building embed...");
             var embed = new Discord.EmbedBuilder();
             embed.WithColor(await ModuleHelpers.GetUserColor(user))
             .WithAuthor(new Discord.EmbedAuthorBuilder().WithName(user.Username).WithIconUrl(user.GetAvatarUrl()))
@@ -160,7 +160,7 @@ namespace Leirosa.Modules
             .AddField("Active clients", clientList != "" ? clientList : "None", true)
             .AddField($"Roles ({rolesSorted.Count()})", roleList, true);
 
-            _log.Debug("Replying...");
+            log.Debug("Replying...");
             await ReplyAsync(embed: embed.Build());
         }
 
@@ -169,16 +169,16 @@ namespace Leirosa.Modules
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)]
         public async Task ServerInfoAsync()
         {
-            _log.Debug("\"serverinfo\" was called!");
+            log.Debug("\"serverinfo\" was called!");
 
             var discordColor = new Discord.Color(0, 0, 0);
 
             // Some bullshit to get the average color of the server icon
             using (var client = new HttpClient())
             {
-                _log.Debug("Retrieving server icon...");
+                log.Debug("Retrieving server icon...");
                 var response = await client.GetAsync(Context.Guild.IconUrl);
-                _log.Debug("Converting HTTP response to image...");
+                log.Debug("Converting HTTP response to image...");
                 var ms = new MemoryStream(await response.Content.ReadAsByteArrayAsync());
 
                 using (var image = new ImageMagick.MagickImage(ms))
@@ -189,7 +189,7 @@ namespace Leirosa.Modules
                 }
             }
 
-            _log.Debug("Building embed...");
+            log.Debug("Building embed...");
             var embed = new Discord.EmbedBuilder();
             embed.WithColor(discordColor)
             .AddField("Name", Context.Guild.Name, true)
@@ -204,7 +204,7 @@ namespace Leirosa.Modules
             .AddField("Active threads", Context.Guild.ThreadChannels.Count, true)
             .AddField("Boosts", Context.Guild.PremiumSubscriptionCount, true);
 
-            _log.Debug("Replying...");
+            log.Debug("Replying...");
             await ReplyAsync(embed: embed.Build());
         }
 
@@ -213,24 +213,24 @@ namespace Leirosa.Modules
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)]
         public async Task PermissionsAsync([Discord.Commands.Summary("Target user")]Discord.WebSocket.SocketGuildUser user = null)
         {
-            _log.Debug("\"permissions\" was called!");
+            log.Debug("\"permissions\" was called!");
 
             if (user == null)
             {
-                _log.Debug("No target. Setting target user to self...");
+                log.Debug("No target. Setting target user to self...");
                 user = Context.User as Discord.WebSocket.SocketGuildUser;
             }
 
-            _log.Debug("Creating permissions list...");
+            log.Debug("Creating permissions list...");
             var permissionsString = user.GuildPermissions.ToList().Select(x => x.ToString()).Aggregate((a, b) => a + "\n" + b);
 
-            _log.Debug("Building embed...");
+            log.Debug("Building embed...");
             var embed = new Discord.EmbedBuilder();
             embed.WithColor(await ModuleHelpers.GetUserColor(user))
             .WithAuthor(new Discord.EmbedAuthorBuilder().WithName(user.Username).WithIconUrl(user.GetAvatarUrl()))
             .AddField("Permissions", permissionsString);
 
-            _log.Debug("Replying...");
+            log.Debug("Replying...");
             await ReplyAsync(embed: embed.Build());
         }
 
@@ -239,41 +239,41 @@ namespace Leirosa.Modules
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)]
         public async Task CPermissionsAsync([Discord.Commands.Summary("Target user")]Discord.WebSocket.SocketGuildUser user = null, [Discord.Commands.Summary("Target channel")]Discord.WebSocket.SocketGuildChannel channel = null)
         {
-            _log.Debug("\"cpermissions\" was called!");
+            log.Debug("\"cpermissions\" was called!");
 
             if (user == null)
             {
-                _log.Debug("No user target. Setting target user to self...");
+                log.Debug("No user target. Setting target user to self...");
                 user = Context.User as Discord.WebSocket.SocketGuildUser;
             }
 
             if (channel == null)
             {
-                _log.Debug("No channel target. Setting channel target to context.");
+                log.Debug("No channel target. Setting channel target to context.");
                 channel = Context.Channel as Discord.WebSocket.SocketGuildChannel;
             }
 
             var permissionsString = "";
 
-            _log.Debug("Creating permissions list...");
+            log.Debug("Creating permissions list...");
             try
             {
                 permissionsString = user.GetPermissions(channel).ToList().Select(x => x.ToString()).Aggregate((a, b) => a + "\n" + b);
             }
             catch (System.InvalidOperationException)
             {
-                _log.Debug("No permissions found. Returning...");
+                log.Debug("No permissions found. Returning...");
                 await ReplyAsync("User is not a member of channel.");
                 return;
             }
 
-            _log.Debug("Building embed...");
+            log.Debug("Building embed...");
             var embed = new Discord.EmbedBuilder();
             embed.WithColor(await ModuleHelpers.GetUserColor(user))
             .WithAuthor(new Discord.EmbedAuthorBuilder().WithName(user.Username).WithIconUrl(user.GetAvatarUrl()))
             .AddField($"Permissions in {channel.Name}", permissionsString);
 
-            _log.Debug("Replying...");
+            log.Debug("Replying...");
             await ReplyAsync(embed: embed.Build());
         }
 
@@ -281,7 +281,7 @@ namespace Leirosa.Modules
         [Discord.Commands.Summary("Suggests features.")]
         public async Task SuggestAsync([Discord.Commands.Summary("Suggestion to be made")][Discord.Commands.Remainder]string suggestion)
         {
-            _log.Debug("\"suggest\" was called!");
+            log.Debug("\"suggest\" was called!");
 
             using (var writer = File.AppendText(Program.Config.SuggestionsPath))
             {
@@ -295,7 +295,7 @@ namespace Leirosa.Modules
         [Discord.Commands.Summary("Reports bugs.")]
         public async Task ReportAsync([Discord.Commands.Summary("Report to be made")][Discord.Commands.Remainder]string report)
         {
-            _log.Debug("\"report\" was called!");
+            log.Debug("\"report\" was called!");
 
             using (var writer = File.AppendText(Program.Config.ReportsPath))
             {
@@ -310,12 +310,12 @@ namespace Leirosa.Modules
         [Discord.Commands.RequireContext(Discord.Commands.ContextType.Guild)]
         public async Task MaintenanceAsync()
         {
-            _log.Debug("\"maintenance\" was called!");
+            log.Debug("\"maintenance\" was called!");
 
-            _log.Debug($"Downloading users in guild {Context.Guild.Name} ({Context.Guild.Id}).");
+            log.Debug($"Downloading users in guild {Context.Guild.Name} ({Context.Guild.Id}).");
             await Context.Guild.DownloadUsersAsync();
 
-            _log.Debug("Collecting garbage...");
+            log.Debug("Collecting garbage...");
             System.GC.Collect();
 
             await ReplyAsync("Maintenance complete!");
@@ -325,9 +325,9 @@ namespace Leirosa.Modules
         [Discord.Commands.Summary("Prints a list of guilds the bot is in.")]
         public async Task GuildsAsync()
         {
-            _log.Debug("\"guilds\" was called!");
+            log.Debug("\"guilds\" was called!");
 
-            _log.Debug("Replying...");
+            log.Debug("Replying...");
             await ReplyAsync($"```\n{Context.Client.Guilds.Select(guild => guild.Name).Aggregate((a, b) => a + "\n" + b)}\n```");
         }
 
@@ -335,9 +335,9 @@ namespace Leirosa.Modules
         [Discord.Commands.Summary("Prints a list of channels in the guild.")]
         public async Task ChannelsAsync()
         {
-            _log.Debug("\"channels\" was called!");
+            log.Debug("\"channels\" was called!");
 
-            _log.Debug("Replying...");
+            log.Debug("Replying...");
             await ReplyAsync($"```\n{Context.Guild.Channels.OrderBy(channel => channel.Name).Select(channel => channel.Name).Aggregate((a, b) => a + "\n" + b)}\n```");
         }
 
@@ -345,17 +345,17 @@ namespace Leirosa.Modules
         [Discord.Commands.Summary("(Developer only) Shuts the bot down.")]
         public async Task ShutdownAsync()
         {
-            _log.Debug("\"shutdown\" was called!");
+            log.Debug("\"shutdown\" was called!");
 
             if (Program.Config.DeveloperIds.Contains(Context.User.Id))
             {
-                _log.Info("Calling Program.Shutdown()...");
+                log.Info("Calling Program.Shutdown()...");
                 await ReplyAsync("Goodbye.");
                 Program.Shutdown();
             }
             else
             {
-                _log.Debug("Caller is not listed as a developer. Doing nothing...");
+                log.Debug("Caller is not listed as a developer. Doing nothing...");
                 await ReplyAsync("Insufficient permissions.");
             }
         }
@@ -364,9 +364,9 @@ namespace Leirosa.Modules
         [Discord.Commands.Summary("Fetches bot runtime info.")]
         public async Task RuntimeAsync()
         {
-            _log.Debug("\"runtime\" was called!");
+            log.Debug("\"runtime\" was called!");
 
-            _log.Debug("Fetching build configuration...");
+            log.Debug("Fetching build configuration...");
             var buildConfiguration = "UNKNOWN";
 #if DEBUG
             buildConfiguration = "DEBUG";
@@ -376,10 +376,10 @@ namespace Leirosa.Modules
 
             var commitSha = "";
 
-            _log.Debug("Fetching git HEAD sha...");
+            log.Debug("Fetching git HEAD sha...");
             try
             {
-                _log.Debug("Constructing process...");
+                log.Debug("Constructing process...");
                 using (var p = new System.Diagnostics.Process())
                 {
                     p.StartInfo.UseShellExecute = false;
@@ -387,24 +387,24 @@ namespace Leirosa.Modules
                     p.StartInfo.FileName = "git";
                     p.StartInfo.Arguments = "rev-parse HEAD";
 
-                    _log.Debug("Starting process...");
+                    log.Debug("Starting process...");
                     p.Start();
 
-                    _log.Debug("Reading from process...");
+                    log.Debug("Reading from process...");
                     commitSha = p.StandardOutput.ReadToEnd();
 
-                    _log.Debug("Awaiting process exit...");
+                    log.Debug("Awaiting process exit...");
                     p.WaitForExit();
-                    _log.Debug("Successfully exited process.");
+                    log.Debug("Successfully exited process.");
                 }
             }
             catch
             {
-                _log.Error("Git is not installed. Command will not have full output. Replying with request to install git...");
+                log.Error("Git is not installed. Command will not have full output. Replying with request to install git...");
                 await ReplyAsync("Please install git on the host server for full runtime output.");
             }
 
-            _log.Debug("Replying...");
+            log.Debug("Replying...");
             await ReplyAsync($"Running {Program.Config.BotName} v{Program.Version}{(commitSha != "" ? $" {commitSha[0..7]}" : "")} on .NET {Environment.Version} on {System.Net.Dns.GetHostName()} with build configuration {buildConfiguration}.");
         }
 
@@ -412,7 +412,7 @@ namespace Leirosa.Modules
         [Discord.Commands.Summary("(Developer only) Saves memory objects to their destination files.")]
         public async Task SaveAsync()
         {
-            _log.Debug("\"save\" was called!");
+            log.Debug("\"save\" was called!");
 
             if (Program.Config.DeveloperIds.Contains(Context.User.Id))
             {
@@ -422,14 +422,14 @@ namespace Leirosa.Modules
                 }
                 catch (NullReferenceException)
                 {
-                    _log.Warn("Bot is not configured to track command invokations.");
+                    log.Warn("Bot is not configured to track command invokations.");
                 }
 
                 await ReplyAsync("Everything has been saved.");
             }
             else
             {
-                _log.Debug("Caller is not listed as a developer. Doing nothing...");
+                log.Debug("Caller is not listed as a developer. Doing nothing...");
                 await ReplyAsync("Insufficient permissions.");
             }
         }
@@ -438,7 +438,7 @@ namespace Leirosa.Modules
         [Discord.Commands.Summary("Lists out most used commands.")]
         public async Task TopCmdAsync()
         {
-            _log.Debug("\"topcmd\" was called!");
+            log.Debug("\"topcmd\" was called!");
 
             if (Program.Config.TrackInvokedCommands)
             {
@@ -446,7 +446,7 @@ namespace Leirosa.Modules
             }
             else
             {
-                _log.Debug($"{nameof(Program.Config.TrackInvokedCommands)} is not enabled. Returning...");
+                log.Debug($"{nameof(Program.Config.TrackInvokedCommands)} is not enabled. Returning...");
                 await ReplyAsync("Command tracking is disabled in the bot config.");
             }
         }

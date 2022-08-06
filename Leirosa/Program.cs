@@ -23,8 +23,8 @@ namespace Leirosa
 
         public static Hooks Hooks {get; set;}
 
-        private static readonly NLog.Logger _log = NLog.LogManager.GetCurrentClassLogger();
-        private bool _isReadied = false;
+        private static readonly NLog.Logger log = NLog.LogManager.GetCurrentClassLogger();
+        private bool isReadied = false;
 
         public async Task MainAsync()
         {
@@ -36,77 +36,77 @@ namespace Leirosa
             ValidateConfig(Config);
 
             {
-                var config = new NLog.Config.LoggingConfiguration();
-                var logfile = new NLog.Targets.FileTarget("logfile"){FileName=$"{Config.DataPath}/{Config.LogName}", Layout="${longdate}|${level}|${callsite}:${callsite-linenumber}|${threadid}|${message}"}; // TODO: Set layout property to include method names in log entries
-                var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
+                var logConfig = new NLog.Config.LoggingConfiguration();
+                var logFile = new NLog.Targets.FileTarget("logfile"){FileName=$"{Config.DataPath}/{Config.LogName}", Layout="${longdate}|${level}|${callsite}:${callsite-linenumber}|${threadid}|${message}"}; // TODO: Set layout property to include method names in log entries
+                var logConsole = new NLog.Targets.ConsoleTarget("logconsole");
 
                 if (Release)
                 {
-                    var loglevel = NLog.LogLevel.Info;
+                    var logLevel = NLog.LogLevel.Info;
                     switch (Config.LogLevel ?? "")
                     {
                         case ("Debug"):
-                            loglevel = NLog.LogLevel.Debug;
+                            logLevel = NLog.LogLevel.Debug;
                         break;
                         case ("Info"):
-                            loglevel = NLog.LogLevel.Info;
+                            logLevel = NLog.LogLevel.Info;
                         break;
                         case ("Warn"):
-                            loglevel = NLog.LogLevel.Warn;
+                            logLevel = NLog.LogLevel.Warn;
                         break;
                         case ("Error"):
-                            loglevel = NLog.LogLevel.Error;
+                            logLevel = NLog.LogLevel.Error;
                         break;
                         case ("Fatal"):
-                            loglevel = NLog.LogLevel.Fatal;
+                            logLevel = NLog.LogLevel.Fatal;
                         break;
                     }
-                    config.AddRule(loglevel, NLog.LogLevel.Fatal, logfile);
-                    config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logconsole);
+                    logConfig.AddRule(logLevel, NLog.LogLevel.Fatal, logFile);
+                    logConfig.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logConsole);
                 }
                 else
                 {
-                    var loglevel = NLog.LogLevel.Debug;
+                    var logLevel = NLog.LogLevel.Debug;
                     switch (Config.LogLevel ?? "")
                     {
                         case ("Debug"):
-                            loglevel = NLog.LogLevel.Debug;
+                            logLevel = NLog.LogLevel.Debug;
                         break;
                         case ("Info"):
-                            loglevel = NLog.LogLevel.Info;
+                            logLevel = NLog.LogLevel.Info;
                         break;
                         case ("Warn"):
-                            loglevel = NLog.LogLevel.Warn;
+                            logLevel = NLog.LogLevel.Warn;
                         break;
                         case ("Error"):
-                            loglevel = NLog.LogLevel.Error;
+                            logLevel = NLog.LogLevel.Error;
                         break;
                         case ("Fatal"):
-                            loglevel = NLog.LogLevel.Fatal;
+                            logLevel = NLog.LogLevel.Fatal;
                         break;
                     }
-                    config.AddRule(loglevel, NLog.LogLevel.Fatal, logfile);
-                    config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logconsole);
+                    logConfig.AddRule(logLevel, NLog.LogLevel.Fatal, logFile);
+                    logConfig.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Fatal, logConsole);
                 }
 
-                NLog.LogManager.Configuration = config;
+                NLog.LogManager.Configuration = logConfig;
             }
 
-            _log.Info("Logger setup.");
+            log.Info("Logger setup.");
 
             if (Release)
             {
-                _log.Info("Running in RELEASE.");
+                log.Info("Running in RELEASE.");
             }
             else
             {
-                _log.Info("Running in DEBUG.");
+                log.Info("Running in DEBUG.");
             }
 
-            _log.Info("Checking (and creating if necessary) directory in which to store bot runtime data...");
+            log.Info("Checking (and creating if necessary) directory in which to store bot runtime data...");
             Directory.CreateDirectory($"{ExecutingPath}/{Config.DataPath}");
 
-            _log.Debug("Creating client...");
+            log.Debug("Creating client...");
             Client = new Discord.WebSocket.DiscordSocketClient(new Discord.WebSocket.DiscordSocketConfig(){
                 LogLevel = Discord.LogSeverity.Debug,
                 AlwaysDownloadUsers = true,
@@ -115,7 +115,7 @@ namespace Leirosa
             });
             Client.Log += ClientLog;
 
-            _log.Debug("Logging in...");
+            log.Debug("Logging in...");
             await Client.LoginAsync(Discord.TokenType.Bot, Config.Token);
             await Client.StartAsync();
 
@@ -128,34 +128,34 @@ namespace Leirosa
 
         private async Task Ready()
         {
-            if (_isReadied)
+            if (isReadied)
             {
-                _log.Warn("Already readied once. Returning out of Ready()...");
+                log.Warn("Already readied once. Returning out of Ready()...");
                 return;
             }
 
-            _log.Debug("Client ready. Initializing CommandService...");
+            log.Debug("Client ready. Initializing CommandService...");
             Commands = new Discord.Commands.CommandService();
-            _log.Debug("CommandService ready. Initializing CommandHandler...");
+            log.Debug("CommandService ready. Initializing CommandHandler...");
             var commandHandler = new CommandHandler(Client, Commands);
-            _log.Info("Installing commands...");
+            log.Info("Installing commands...");
             await commandHandler.InstallCommandsAsync();
 
             if (Config.UseCustomStatus)
             {
-                _log.Debug("Setting custom status...");
+                log.Debug("Setting custom status...");
                 await Client.SetActivityAsync(new Discord.Game(Config.Status)); // Apparently you can't set custom statuses for bots, so this is the best we can do.
             }
 
-            _log.Info("Initializing event hooks...");
+            log.Info("Initializing event hooks...");
             Hooks = new Hooks();
 
-            _isReadied = true;
+            isReadied = true;
         }
 
         public static void Shutdown()
         {
-            _log.Info("Exiting cleanly...");
+            log.Info("Exiting cleanly...");
             Environment.Exit(0);
         }
 
@@ -165,22 +165,22 @@ namespace Leirosa
             {
                 case Discord.LogSeverity.Debug:
                 case Discord.LogSeverity.Verbose:
-                    _log.Debug(msg.ToString());
+                    log.Debug(msg.ToString());
                 break;
                 case Discord.LogSeverity.Info:
-                    _log.Info(msg.ToString());
+                    log.Info(msg.ToString());
                 break;
                 case Discord.LogSeverity.Warning:
-                    _log.Warn(msg.ToString());
+                    log.Warn(msg.ToString());
                 break;
                 case Discord.LogSeverity.Error:
-                    _log.Error(msg.ToString());
+                    log.Error(msg.ToString());
                 break;
                 case Discord.LogSeverity.Critical:
-                    _log.Fatal(msg.ToString());
+                    log.Fatal(msg.ToString());
                 break;
                 default:
-                    _log.Info(msg.ToString());
+                    log.Info(msg.ToString());
                 break;
             }
 
